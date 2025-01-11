@@ -8,7 +8,7 @@ import {SnackbarProvider} from "notistack";
 import { Provider } from 'react-redux';
 import store from './warehouse/Utils/store';
 import PrivateRoute from "./warehouse/PrivateRoute";
-import WarehouseIndex from "./warehouse/WarehouseIndex";
+import WarehouseIndex from "./warehouse/Pages/WarehouseIndex";
 import CustomizedSnackbar from "./warehouse/Utils/CustomizedSnackbar";
 import React from "react";
 import {QueryClient, QueryClientProvider} from "react-query";

@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const { sequelize, handleDatabaseQuery } = require('../db');
 
 const Category = sequelize.define('Category', {
     id: {
@@ -28,10 +28,21 @@ const Category = sequelize.define('Category', {
     last_add: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
     }
 }, {
     tableName: 'Category',
-    timestamps: false
+    timestamps: true
 });
+
 
 module.exports = Category;

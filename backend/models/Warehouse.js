@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const { sequelize } = require('../db');
+const Category = require('./Category');
+const ProductType = require('./ProductType');
 
 const Warehouse = sequelize.define('Warehouse', {
     id: {
@@ -15,7 +17,11 @@ const Warehouse = sequelize.define('Warehouse', {
         unique: true,
         allowNull: false
     },
-    product_category: {
+    product_type_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    product_category_id: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -26,10 +32,23 @@ const Warehouse = sequelize.define('Warehouse', {
     maximum_condition: {
         type: DataTypes.INTEGER,
         allowNull: false
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
     }
 }, {
     tableName: 'Warehouse',
-    timestamps: false
+    timestamps: true
 });
+
+Warehouse.belongsTo(Category, { as: 'category', foreignKey: 'product_category_id' });
+Warehouse.belongsTo(ProductType, { as: 'productType', foreignKey: 'product_type_id' });
 
 module.exports = Warehouse;
