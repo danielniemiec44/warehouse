@@ -2,7 +2,7 @@ const express = require("express");
 const { sequelize } = require("./db");
 const { encryptPassword } = require('./encrypt');
 const logIn = require("./Modules/LogIn");
-const { WarehouseData, getWarehouseDataByID, getCategories } = require("./Modules/WarehouseData");
+const { WarehouseData, getWarehouseDataByID, getCategories, setWarehouseDataByID, getProductType} = require("./Modules/WarehouseData");
 const ProductType = require('./models/ProductType');
 
 const PORT = 4000;
@@ -38,6 +38,14 @@ app.get('/warehouse', async (req, res) => {
 
 app.get('/warehouse/:id', async (req, res) => {
   await getWarehouseDataByID(req, res)
+});
+
+app.put('/warehouse/:id', async (req, res) => {
+    await setWarehouseDataByID(req, res)
+});
+
+app.get('/productTypes', async (req, res) => {
+  await getProductType(req, res)
 });
 
 app.get('/categories', async (req, res) => {
