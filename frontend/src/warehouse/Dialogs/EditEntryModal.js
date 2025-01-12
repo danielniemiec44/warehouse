@@ -1,17 +1,13 @@
-import React, {useCallback} from "react";
+import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
-import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
-import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import {CustomFetch} from "../Utils/CustomFetch";
-import {FormControl, InputLabel, LinearProgress, MenuItem, Select, Skeleton} from "@mui/material";
-import {useQuery} from "react-query";
+import {useMutation, useQuery, useQueryClient} from "react-query";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import Stack from "@mui/material/Stack";
 import LoadingIndicator from "../Utils/LoadingIndicator";
@@ -21,18 +17,43 @@ import FetchedSelect from "../Utils/FetchedSelect.tsx";
 export default function EditEntryModal() {
     const editEntryId = useSelector((state) => state.delivery.editEntryId);
     const dispatch = useDispatch();
-    const { t, i18n } = useTranslation();
+    const queryClient = useQueryClient();
+    const { t } = useTranslation();
 
-    const getWarehouseDataByID = async () => {
-        const data = await CustomFetchForUseQuery(`warehouse/${editEntryId}`, "GET", null);
-        console.log(data);
-        return data;
-    };
+    const {
+        data: warehouseData,
+        isLoading: isLoadingDataFetch,
+        isSuccess: isLoadingDataSuccess
+    } = useQuery(["warehouseData", editEntryId], CustomFetchForUseQuery(`warehouse/${editEntryId}`, "GET", null));
+    const [changedWarehouseData, setChangedWarehouseData] = React.useState(null);
 
-    const { data: warehouseData, isLoading: isLoadingDataFetch, isError: isErrorDataFetch } = useQuery(["warehouseData", editEntryId], getWarehouseDataByID);
+    if (isLoadingDataSuccess && !changedWarehouseData) {
+        setChangedWarehouseData(warehouseData);
+    }
 
     const handleClose = () => {
         dispatch({type: 'CLOSE_EDIT_DELIVERY_MODAL'});
+    }
+
+    const mutation = useMutation(
+        (newData) => CustomFetchForUseQuery(`warehouse/${editEntryId}`, "PUT", newData)(),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(["warehouseData", editEntryId])
+                    .then(() => queryClient.invalidateQueries("warehouse"))
+                    .then(handleClose);
+            },
+        }
+    );
+
+    const save = () => {
+        mutation.mutate(changedWarehouseData);
+    }
+
+    const handleChange = (field) => {
+        return (e) => {
+            setChangedWarehouseData({...changedWarehouseData, [field]: e.target.value});
+        };
     }
 
     return(
@@ -48,20 +69,21 @@ export default function EditEntryModal() {
                 {( isLoadingDataFetch) &&
                     <LoadingIndicator />
                 }
-                {warehouseData && (
+                {warehouseData && changedWarehouseData && (
                     <Stack spacing={2}>
                         <Grid item xs={12}>
-                            <TextField type={"text"} value={warehouseData.product_name} fullWidth/>
+                            <TextField type={"text"} value={changedWarehouseData.product_name} onChange={handleChange("product_name")} fullWidth/>
                         </Grid>
-                        <FetchedSelect defaultValue={""} queryName={"categories"} endpoint={"categories"} method={"GET"} />
-                            <TextField type={"number"} value={warehouseData.available_condition} fullWidth />
-                            <TextField type={"number"} value={warehouseData.maximum_condition} fullWidth />
+                        <FetchedSelect label={t("warehouse.product_type")} value={changedWarehouseData.product_type_id} queryName={"productTypes"} endpoint={"productTypes"} method={"GET"} onChange={handleChange("product_type_id")} />
+                        <FetchedSelect label={t("warehouse.category")} value={changedWarehouseData.product_category_id} queryName={"categories"} endpoint={"categories"} method={"GET"} onChange={handleChange("product_category_id")} />
+                            <TextField type={"number"} value={changedWarehouseData.available_condition} onChange={handleChange("available_condition")} fullWidth />
+                            <TextField type={"number"} value={changedWarehouseData.maximum_condition} onChange={handleChange("maximum_condition")} fullWidth />
                     </Stack>
                 )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color={"error"}>Zamknij okno (bez zapisywania)</Button>
-                <Button onClick={handleClose} autoFocus variant={"contained"}>
+                <Button onClick={save} variant={"contained"}>
                     Zapisz
                 </Button>
             </DialogActions>
