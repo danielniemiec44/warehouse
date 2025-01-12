@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import AppBar from "./AppBar";
+import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
@@ -12,9 +12,11 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useDispatch, useSelector} from "react-redux";
-import NewDeliveryDialog from "./Dialogs/NewDeliveryDialog";
-import {CustomFetch} from "./Utils/CustomFetch";
-import EditEntryModal from "./Dialogs/EditEntryModal";
+import NewDeliveryDialog from "../Dialogs/NewDeliveryDialog";
+import {CustomFetch} from "../Utils/CustomFetch";
+import EditEntryModal from "../Dialogs/EditEntryModal";
+import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
+import {useQuery} from "react-query";
 
 
 
@@ -26,72 +28,11 @@ export default function WarehouseIndex() {
         dispatch({ type: 'OPEN_ADD_DELIVERY_MODAL' });
     };
 
-    const handleOpenQuantityModal = () => {
-        dispatch({ type: 'OPEN_QUANTITY_MODAL' });
-    };
-
     const handleEditEntry = (id) => {
         dispatch({ type: 'OPEN_EDIT_ENTRY_MODAL', payload: id });
     }
 
-
-    const [rawName, setRawName] = React.useState('');
-    const [rawCategory, setRawCategory] = React.useState('');
-    const [rawQuantity, setRawQuantity] = React.useState('');
-    const [type, setType] = React.useState('');
-    const [data, setData] = React.useState([]);
-    const [id, setId] = React.useState('');
-    const [maxQuantity, setMaxQuantity] = React.useState('');
-
-
-    const getWarehouseData = useCallback((event) => {
-        CustomFetch(
-            "WarehouseData",
-            "POST",
-             null,
-            (data) => { //odbiór danych - co dostajesz (setData(data))
-                setData(data);
-            }
-        );
-    }, []);
-
-    React.useEffect(() => {
-        getWarehouseData();
-    }, []);
-
-
-    // dialog
-    const [openDelivery, setDeliveryOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setDeliveryOpen(true);
-    }
-
-    const handleClose = () => {
-        setDeliveryOpen(false);
-    }
-
-
-    const handleChangeName = (event) => {
-        setRawName(event.target.value);
-    }
-
-    const handleChangeCategory = (event) => {
-        setRawCategory(event.target.value);
-    }
-
-    const handleChangeType = (event) => {
-        setType(event.target.value);
-    }
-
-    const warehouse = data.map((item, index) => ({
-        id: item.id,
-        name: item.product_name,
-        category: item.product_category,
-        type: item.product_type,
-        quantity: item.available_condition,
-        maxQuantity: item.maximum_condition
-    }));
+    const { data: warehouse, isLoading: isLoadingDataFetch, isError: isErrorDataFetch } = useQuery("warehouse", CustomFetchForUseQuery("warehouse", "GET", null));
 
     return (
         <div style={{width: '100%'}}>
@@ -118,21 +59,21 @@ export default function WarehouseIndex() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {warehouse.map((row) => (
+                                {warehouse && warehouse.map((row) => (
                                     <TableRow
-                                        key={row.id}
+                                        key={row?.id}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                     >
                                         <TableCell component="th" scope="row">
-                                            {row.id}
+                                            {row?.id}
                                         </TableCell>
-                                        <TableCell align="right">{row.name}</TableCell>
-                                        <TableCell align="right">{row.type}</TableCell>
-                                        <TableCell align="right">{row.category}</TableCell>
-                                        <TableCell align="right">{row.quantity}</TableCell>
-                                        <TableCell align="right">{row.maxQuantity}</TableCell>
+                                        <TableCell align="right">{row?.product_name}</TableCell>
+                                        <TableCell align="right">{row?.productType?.name}</TableCell>
+                                        <TableCell align="right">{row?.category?.name}</TableCell>
+                                        <TableCell align="right">{row?.available_condition}</TableCell>
+                                        <TableCell align="right">{row?.maximum_condition}</TableCell>
                                         <TableCell align="right">
-                                            <Button variant={"text"} color={"primary"} style={{marginRight: "10px"}} onClick={() => handleEditEntry(row.id)}>Edytuj</Button>
+                                            <Button variant={"text"} color={"primary"} style={{marginRight: "10px"}} onClick={() => handleEditEntry(row?.id)}>Edytuj</Button>
                                             <Button variant={"outlined"} color={"error"}>Usuń produkt</Button>
                                         </TableCell>
 

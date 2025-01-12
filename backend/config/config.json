@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "db_108545",
+    "password": "m0zAd54OzRIZNg9A",
+    "database": "db_108545",
+    "host": "sql.22.svpj.link",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "db_108545",
+    "password": "m0zAd54OzRIZNg9A",
+    "database": "db_108545_test",
+    "host": "sql.22.svpj.link",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "db_108545",
+    "password": "m0zAd54OzRIZNg9A",
+    "database": "db_108545_prod",
+    "host": "sql.22.svpj.link",
+    "dialect": "mysql"
+  }
+}

@@ -24,7 +24,7 @@ export default function EditEntryModal() {
     const { t, i18n } = useTranslation();
 
     const getWarehouseDataByID = async () => {
-        const data = await CustomFetchForUseQuery("getWarehouseDataByID", "POST", { editEntryId });
+        const data = await CustomFetchForUseQuery(`warehouse/${editEntryId}`, "GET", null);
         console.log(data);
         return data;
     };
@@ -53,7 +53,7 @@ export default function EditEntryModal() {
                         <Grid item xs={12}>
                             <TextField type={"text"} value={warehouseData.product_name} fullWidth/>
                         </Grid>
-                        <FetchedSelect defaultValue={""} queryName={"categories"} endpoint={"getCategories"} method={"POST"} />
+                        <FetchedSelect defaultValue={""} queryName={"categories"} endpoint={"categories"} method={"GET"} />
                             <TextField type={"number"} value={warehouseData.available_condition} fullWidth />
                             <TextField type={"number"} value={warehouseData.maximum_condition} fullWidth />
                     </Stack>

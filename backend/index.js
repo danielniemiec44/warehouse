@@ -1,8 +1,9 @@
 const express = require("express");
-const sequelize = require("./db");
+const { sequelize } = require("./db");
 const { encryptPassword } = require('./encrypt');
 const logIn = require("./Modules/LogIn");
 const { WarehouseData, getWarehouseDataByID, getCategories } = require("./Modules/WarehouseData");
+const ProductType = require('./models/ProductType');
 
 const PORT = 4000;
 const app = express();
@@ -12,7 +13,7 @@ app.use(express.json());
 
 app.listen(PORT, async () => {
   try {
-    encryptPassword(adminPassword)
+    await encryptPassword(adminPassword)
     await sequelize.authenticate();
     console.log('Database connected!');
     await sequelize.sync();
@@ -31,14 +32,14 @@ app.post("/login", async (req, res) => {
   await logIn(req, res);
 });
 
-app.post('/warehouseData', async (req, res) => {
+app.get('/warehouse', async (req, res) => {
   await WarehouseData(req, res)
 });
 
-app.post('/getWarehouseDataByID', async (req, res) => {
+app.get('/warehouse/:id', async (req, res) => {
   await getWarehouseDataByID(req, res)
 });
 
-app.post('/getCategories', async (req, res) => {
+app.get('/categories', async (req, res) => {
   await getCategories(req, res)
 });
