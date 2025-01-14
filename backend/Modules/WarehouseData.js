@@ -39,8 +39,19 @@ const getWarehouseDataByID = (req, res) => {
     }), res);
 };
 
+// update by id with joined tables Category and ProductType
+const setWarehouseDataByID = (req, res) => {
+    handleDatabaseQuery(() => Warehouse.update(req.body, {
+        where: { product_id: req.params.id },
+    }), res);
+}
+
+const getProductType = (req, res) => {
+    handleDatabaseQuery(() => ProductType.findAll(), res);
+};
+
 const getCategories = (req, res) => {
     handleDatabaseQuery(() => Category.findAll(), res);
 };
 
-module.exports = { WarehouseData, getWarehouseDataByID, getCategories };
+module.exports = { WarehouseData, getWarehouseDataByID, setWarehouseDataByID, getCategories, getProductType };

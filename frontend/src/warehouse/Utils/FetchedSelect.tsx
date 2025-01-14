@@ -1,28 +1,24 @@
-import React from 'react';
+import React, {ReactNode} from 'react';
 import PropTypes from 'prop-types';
-import { FormControl, InputLabel, MenuItem, Select, Skeleton } from "@mui/material";
+import {FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Skeleton} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "react-query";
-import useCustomFetch from "./CustomFetchForUseQuery";
+import CustomFetchForUseQuery from "./CustomFetchForUseQuery.jsx";
 
-interface DataItem {
-    value: string;
-    name: string;
-}
 
 interface FetchedSelectProps {
-    defaultValue: string;
+    value: string;
     queryName: string;
     endpoint: string;
     method?: string;
     body?: object;
+    onChange?: (event: SelectChangeEvent<string>, child: ReactNode) => void;
+    label?: string;
 }
 
-export default function FetchedSelect({ defaultValue, queryName, endpoint, method = "GET", body = null }: FetchedSelectProps) {
+export default function FetchedSelect({ value, queryName, endpoint, method = "GET", body = null, onChange, label = "" }: FetchedSelectProps) {
+    const { data, isLoading, isError } = useQuery<any>(queryName, CustomFetchForUseQuery(endpoint, method, body)); // Use the returned function.
     const { t } = useTranslation();
-    const fetchData = useCustomFetch(endpoint, method, body); // Directly call the hook.
-
-    const { data, isLoading, isError } = useQuery<DataItem[]>(queryName, fetchData); // Use the returned function.
 
     if (isError) {
         return <div>{t("errors.fetchingDataError", { queryName })}</div>;
@@ -34,18 +30,19 @@ export default function FetchedSelect({ defaultValue, queryName, endpoint, metho
 
     return (
         <FormControl variant="outlined" fullWidth>
-            <InputLabel id="product_type_label">{t("warehouse.product_type")}</InputLabel>
+            <InputLabel id="product_type_label">{label}</InputLabel>
             <Select
                 labelId="product_type_label"
                 id="product_type_select"
-                defaultValue={defaultValue}
-                label={t("warehouse.product_type")}
+                value={value}
+                label={label}
+                onChange={onChange}
             >
                 <MenuItem value="">
                     <em>Brak wyboru</em>
                 </MenuItem>
                 {data && data.map((row, index) => (
-                    <MenuItem key={index} value={row.value}>{row.name}</MenuItem>
+                    <MenuItem value={row?.id}>{row?.name}</MenuItem>
                 ))}
             </Select>
         </FormControl>

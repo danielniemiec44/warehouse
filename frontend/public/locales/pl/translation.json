@@ -1,6 +1,7 @@
 {
   "warehouse": {
-    "product_type": "Typ produktu"
+    "product_type": "Typ produktu",
+    "category": "Kategoria"
   },
   "errors": {
     "fetchingDataError": "Nie udało się załadować danych dla: {{queryName}}",
