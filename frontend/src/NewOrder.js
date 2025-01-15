@@ -11,6 +11,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab';
+import NewOrderDialog from "./warehouse/Dialogs/NewOrderDialog";
 export default function NewOrder() {
 
     const darkTheme = createTheme({
@@ -33,7 +34,7 @@ export default function NewOrder() {
               <Grid item xs={12} xxl={6} lg={6} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Paper elevation={3} style={{ padding: 20, alignContent: 'center', textAlign: 'center' }}>
                     <Typography variant="h4" color="white" fullWidth> Nowe zamówienie </Typography>
-                    <Typography variant="body1" color="white" fullWidth> W tym miejscu utworzysz nowe zamówienie ze swoimi ulubionymi smakami, 
+                    <Typography variant="body1" color="white" fullWidth> W tym miejscu utworzysz nowe zamówienie ze swoimi ulubionymi smakami,
                     możesz wybrać dokładny mix bądź indywidualne smak każdej butelki. </Typography>
                 </Paper>
               </Grid>
@@ -113,6 +114,7 @@ export default function NewOrder() {
           </Grid>
         </Box>
 
+            <NewOrderDialog />
       </ThemeProvider>
  )
 }

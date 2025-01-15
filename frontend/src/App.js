@@ -32,7 +32,7 @@ function App() {
             <Router>
                 <Routes>
                     <Route path="/" element={<Login />} />
-                    <Route path="/order" element={<PrivateRoute><Order /></PrivateRoute>} />
+                    <Route path="/orders" element={<Order />} />
                     <Route path="/warehouse" element={<PrivateRoute><WarehouseIndex /></PrivateRoute>} />
                     <Route path="/main"  element={<PrivateRoute><Main /></PrivateRoute>} />
                     <Route path="/adddelivery" element={<PrivateRoute><AddDelivery /></PrivateRoute>} />
