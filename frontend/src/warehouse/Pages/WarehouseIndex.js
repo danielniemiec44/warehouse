@@ -1,10 +1,8 @@
-import React, {useCallback} from 'react';
+import React from 'react';
 import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import {FormControl, InputLabel, MenuItem, Select, Stack} from "@mui/material";
-import Paper from "@mui/material/Paper";
+import {Stack} from "@mui/material";
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,16 +11,27 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useDispatch, useSelector} from "react-redux";
 import NewDeliveryDialog from "../Dialogs/NewDeliveryDialog";
-import {CustomFetch} from "../Utils/CustomFetch";
 import EditEntryModal from "../Dialogs/EditEntryModal";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {useQuery} from "react-query";
-
+import { styled } from '@mui/material/styles';
 
 
 export default function WarehouseIndex() {
     const dispatch = useDispatch();
     const editEntryId = useSelector((state) => state.delivery.editEntryId)
+
+    const EvenRow = styled(TableRow)(({ theme }) => ({
+        backgroundColor: '#f5f5f5',
+    }));
+
+    const OddRow = styled(TableRow)(({ theme }) => ({
+        backgroundColor: '#ffffff',
+    }));
+
+    const LowConditionRow = styled(TableRow)(({ theme }) => ({
+        backgroundColor: '#ffcccc',
+    }));
 
     const handleOpenAddDeliveryModal = () => {
         dispatch({ type: 'OPEN_ADD_DELIVERY_MODAL' });
@@ -37,16 +46,15 @@ export default function WarehouseIndex() {
     return (
         <div style={{width: '100%'}}>
         <AppBar/>
-          <div style={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', marginTop: "20px"}}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}>
                 <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
-                <div>
+            <Stack direction={"row"}>
                     <Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={() => {handleOpenAddDeliveryModal()}}>Dodaj dostawę</Button>
-                </div>
-          </div>
-            <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', alignContent: 'center', justifyItems: 'center', flexWrap: 'wrap', marginTop: '25px'}}>
-                <Paper elevation={3} style={{width: '90%', maxWidth: '90%', minWidth: '50%'}}>
-                    <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <Button variant={"contained"} color={"primary"}>Kategorie</Button>
+            </Stack>
+            </div>
+                    <TableContainer style={{ padding: 20 }}>
+                        <Table>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID produktu</TableCell>
@@ -59,32 +67,29 @@ export default function WarehouseIndex() {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {warehouse && warehouse.map((row) => (
-                                    <TableRow
-                                        key={row?.id}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell component="th" scope="row">
-                                            {row?.id}
-                                        </TableCell>
-                                        <TableCell align="right">{row?.product_name}</TableCell>
-                                        <TableCell align="right">{row?.productType?.name}</TableCell>
-                                        <TableCell align="right">{row?.category?.name}</TableCell>
-                                        <TableCell align="right">{row?.available_condition}</TableCell>
-                                        <TableCell align="right">{row?.maximum_condition}</TableCell>
-                                        <TableCell align="right">
-                                            <Button variant={"text"} color={"primary"} style={{marginRight: "10px"}} onClick={() => handleEditEntry(row?.id)}>Edytuj</Button>
-                                            <Button variant={"outlined"} color={"error"}>Usuń produkt</Button>
-                                        </TableCell>
-
-                                    </TableRow>
-                                ))}
+                                {warehouse && warehouse.map((row, index) => {
+                                    const RowComponent = row?.available_condition < 10 ? LowConditionRow : (index % 2 === 0 ? EvenRow : OddRow);
+                                    return (
+                                        <RowComponent key={row?.id}>
+                                            <TableCell component="th" scope="row">
+                                                {row?.id}
+                                            </TableCell>
+                                            <TableCell align="right">{row?.product_name}</TableCell>
+                                            <TableCell align="right">{row?.productType?.name}</TableCell>
+                                            <TableCell align="right">{row?.category?.name}</TableCell>
+                                            <TableCell align="right">{row?.available_condition}</TableCell>
+                                            <TableCell align="right">{row?.maximum_condition}</TableCell>
+                                            <TableCell align="right">
+                                                <Button variant={"text"} color={"primary"} style={{ marginRight: "10px" }} onClick={() => handleEditEntry(row?.id)}>Edytuj</Button>
+                                                <Button variant={"outlined"} color={"error"}>Usuń produkt</Button>
+                                            </TableCell>
+                                        </RowComponent>
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </TableContainer>
-                </Paper>
                 <NewDeliveryDialog />
-            </div>
             { editEntryId >= 0 && <EditEntryModal /> }
         </div>
     );
