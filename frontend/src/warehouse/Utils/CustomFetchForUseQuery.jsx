@@ -1,6 +1,3 @@
-import { useTranslation } from "react-i18next";
-import eventEmitter from "./eventEmitter";
-
 function useCustomFetch(endpoint, method = "GET", body = null) {
     return async () => {
         const response = await fetch(`/api/${endpoint}`, {

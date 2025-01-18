@@ -7,5 +7,21 @@
     "fetchingDataError": "Nie udało się załadować danych dla: {{queryName}}",
     "server_returned_error_code": "Serwer zwrócił kod błędu: {{errorCode}}",
     "unexpected_error_occured": "Wystąpił nieoczekiwany błąd"
+  },
+  "newOrder": {
+    "choose_flavors": "Wybierz smaki"
+  },
+  "dialogActions": {
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "clear": "Wyczyść",
+    "add_category": "Dodaj kategorię",
+    "close": "Zamknij"
+  },
+  "actions": {
+    "search": "Szukaj"
+  },
+  "dialogTitles": {
+    "categories": "Kategorie"
   }
 }

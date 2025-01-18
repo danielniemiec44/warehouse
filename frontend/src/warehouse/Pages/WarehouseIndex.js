@@ -15,6 +15,7 @@ import EditEntryModal from "../Dialogs/EditEntryModal";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {useQuery} from "react-query";
 import { styled } from '@mui/material/styles';
+import CategoriesDialog from "../Dialogs/CategoriesDialog.tsx";
 
 
 export default function WarehouseIndex() {
@@ -91,6 +92,7 @@ export default function WarehouseIndex() {
                     </TableContainer>
                 <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
+            <CategoriesDialog />
         </div>
     );
 }
