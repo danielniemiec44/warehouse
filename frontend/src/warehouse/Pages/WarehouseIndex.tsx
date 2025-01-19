@@ -15,22 +15,26 @@ import EditEntryModal from "../Dialogs/EditEntryModal";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {useQuery} from "react-query";
 import { styled } from '@mui/material/styles';
-import CategoriesDialog from "../Dialogs/CategoriesDialog.tsx";
+import CategoriesDialog from "../Dialogs/CategoriesDialog";
+import {RootReducerTypes} from "../Reducers";
+import CategoryEditor from "../Dialogs/CategoryEditor";
 
 
 export default function WarehouseIndex() {
     const dispatch = useDispatch();
-    const editEntryId = useSelector((state) => state.delivery.editEntryId)
+    const editEntryId = useSelector((state: RootReducerTypes) => state.warehouse.editEntryId)
 
-    const EvenRow = styled(TableRow)(({ theme }) => ({
+
+
+    const EvenRow = styled(TableRow)(() => ({
         backgroundColor: '#f5f5f5',
     }));
 
-    const OddRow = styled(TableRow)(({ theme }) => ({
+    const OddRow = styled(TableRow)(() => ({
         backgroundColor: '#ffffff',
     }));
 
-    const LowConditionRow = styled(TableRow)(({ theme }) => ({
+    const LowConditionRow = styled(TableRow)(() => ({
         backgroundColor: '#ffcccc',
     }));
 
@@ -42,7 +46,11 @@ export default function WarehouseIndex() {
         dispatch({ type: 'OPEN_EDIT_ENTRY_MODAL', payload: id });
     }
 
-    const { data: warehouse, isLoading: isLoadingDataFetch, isError: isErrorDataFetch } = useQuery("warehouse", CustomFetchForUseQuery("warehouse", "GET", null));
+    const handleOpenCategoryList = () => {
+        dispatch({ type: 'OPEN_CATEGORY_LIST_MODAL' });
+    }
+
+    const { data: warehouse } = useQuery<any>("warehouse", CustomFetchForUseQuery("warehouse", "GET", null));
 
     return (
         <div style={{width: '100%'}}>
@@ -50,8 +58,8 @@ export default function WarehouseIndex() {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}>
                 <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
             <Stack direction={"row"}>
-                    <Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={() => {handleOpenAddDeliveryModal()}}>Dodaj dostawę</Button>
-                    <Button variant={"contained"} color={"primary"}>Kategorie</Button>
+                    <Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>
+                    <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
             </Stack>
             </div>
                     <TableContainer style={{ padding: 20 }}>
@@ -93,6 +101,7 @@ export default function WarehouseIndex() {
                 <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
             <CategoriesDialog />
+            <CategoryEditor />
         </div>
     );
 }

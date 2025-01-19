@@ -15,7 +15,7 @@ import {useTranslation} from "react-i18next";
 import FetchedSelect from "../Utils/FetchedSelect.tsx";
 
 export default function EditEntryModal() {
-    const editEntryId = useSelector((state) => state.delivery.editEntryId);
+    const editEntryId = useSelector((state) => state.warehouse.editEntryId);
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
     const { t } = useTranslation();

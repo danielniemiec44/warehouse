@@ -3,6 +3,16 @@ const initialState = {
     isAuthenticated: false,
 };
 
+interface UserReducerTypes {
+    user: null | {
+        id: number;
+        username: string;
+        email: string;
+        token: string;
+    };
+    isAuthenticated: boolean;
+}
+
 const userReducer = (state = initialState, action) => {
     switch (action.type) {
         case 'LOGIN_SUCCESS':
@@ -23,3 +33,4 @@ const userReducer = (state = initialState, action) => {
 };
 
 export default userReducer;
+export type { UserReducerTypes };

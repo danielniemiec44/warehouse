@@ -13,7 +13,7 @@ import {CustomFetch} from "../Utils/CustomFetch";
 import eventEmitter from "../Utils/eventEmitter";
 
 export default function NewDeliveryDialog() {
-    const showAddDeliveryModal = useSelector((state) => state.delivery.showAddDeliveryModal);
+    const showAddDeliveryModal = useSelector((state) => state.warehouse.showAddDeliveryModal);
     const dispatch = useDispatch();
 
     const[product, setProduct] = React.useState([]);
