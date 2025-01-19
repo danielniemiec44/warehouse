@@ -18,10 +18,10 @@
     "add_category": "Dodaj kategorię",
     "close": "Zamknij"
   },
-  "actions": {
-    "search": "Szukaj"
-  },
   "dialogTitles": {
     "categories": "Kategorie"
+  },
+  "actions": {
+    "search": "Szukaj"
   }
 }
