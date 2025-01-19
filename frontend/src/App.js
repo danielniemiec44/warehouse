@@ -31,7 +31,7 @@ function App() {
             <SnackbarProvider maxSnack={3}>
             <Router>
                 <Routes>
-                    <Route path="/" element={<Login />} />
+                    <Route path="/" element={<PrivateRoute><Login /></PrivateRoute>} />
                     <Route path="/order" element={<PrivateRoute><Order /></PrivateRoute>} />
                     <Route path="/warehouse" element={<PrivateRoute><WarehouseIndex /></PrivateRoute>} />
                     <Route path="/main"  element={<PrivateRoute><Main /></PrivateRoute>} />

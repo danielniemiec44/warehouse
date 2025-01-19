@@ -5,16 +5,17 @@ import {
     DialogContent,
     DialogActions,
     Button,
-    List,
-    ListItem,
+    ListItemButton,
+    ListItemIcon,
     ListItemText,
-    ListItemButton, ListItemIcon
 } from '@mui/material';
 import {useQuery} from "react-query";
 import useCustomFetch from "../Utils/CustomFetchForUseQuery";
 import CategoryType from "../Types/CategoryType";
-import EditIcon from '@mui/icons-material/Edit';
 import {useTranslation} from "react-i18next";
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import EditIcon from '@mui/icons-material/Edit';
+
 
 interface CategoriesDialogProps {
     onClose: () => void;
@@ -25,21 +26,33 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({ onClose, onAddCateg
     const { data: categories } = useQuery<CategoryType[]>('categories', useCustomFetch('categories'));
     const { t } = useTranslation();
 
+    const renderRow = ({ index, style }: ListChildComponentProps) => {
+        const category = categories ? categories[index] : null;
+        return (
+            <ListItemButton style={style} key={index}>
+                <ListItemIcon sx={{ fontSize: 36 }}>
+                    🗂️
+                </ListItemIcon>
+                <ListItemText primary={category?.name} />
+                <EditIcon />
+            </ListItemButton>
+        );
+    };
+
     return (
         <Dialog open={true} onClose={onClose}>
             <DialogTitle>{t('dialogTitles.categories')}</DialogTitle>
             <DialogContent>
-                <List sx={{ width: '100%', minWidth: 360, bgcolor: 'background.paper' }}>
-                    {categories && categories.map((category, index) => (
-                        <ListItemButton>
-                            <ListItemIcon sx={{ fontSize: 36 }}>
-                                🗂️
-                            </ListItemIcon>
-                            <ListItemText primary={category.name} />
-                            <EditIcon />
-                        </ListItemButton>
-                    ))}
-                </List>
+                {categories && (
+                    <FixedSizeList
+                        height={400}
+                        width={360}
+                        itemSize={46}
+                        itemCount={categories.length}
+                    >
+                        {renderRow}
+                    </FixedSizeList>
+                )}
             </DialogContent>
             <DialogActions>
                 <Button onClick={onAddCategory} color="primary">
