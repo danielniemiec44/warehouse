@@ -7,7 +7,7 @@ import {
     Button,
     ListItemButton,
     ListItemIcon,
-    ListItemText,
+    ListItemText, IconButton, Tooltip, Typography,
 } from '@mui/material';
 import {useQuery} from "react-query";
 import useCustomFetch from "../Utils/CustomFetchForUseQuery";
@@ -41,7 +41,12 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({ onClose, onAddCateg
 
     return (
         <Dialog open={true} onClose={onClose}>
-            <DialogTitle>{t('dialogTitles.categories')}</DialogTitle>
+            <DialogTitle style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <span>{t('dialogTitles.categories')}</span>
+                <Tooltip title={t('dialogActions.add_category')}>
+                    <Button onClick={onAddCategory} color="primary" size={"large"}>+</Button>
+                </Tooltip>
+            </DialogTitle>
             <DialogContent>
                 {categories && (
                     <FixedSizeList
@@ -55,9 +60,6 @@ const CategoriesDialog: React.FC<CategoriesDialogProps> = ({ onClose, onAddCateg
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onAddCategory} color="primary">
-                    {t('dialogActions.add_category')}
-                </Button>
                 <Button onClick={onClose} color="secondary">
                     {t('dialogActions.close')}
                 </Button>

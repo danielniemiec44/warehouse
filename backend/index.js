@@ -4,6 +4,7 @@ const { encryptPassword } = require('./encrypt');
 const logIn = require("./Modules/LogIn");
 const { WarehouseData, getWarehouseDataByID, getCategories, setWarehouseDataByID, getProductType} = require("./Modules/WarehouseData");
 const ProductType = require('./models/ProductType');
+const CategoryCustomField = require('./models/CategoryCustomField');
 
 const PORT = 4000;
 const app = express();

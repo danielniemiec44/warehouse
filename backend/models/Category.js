@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const { sequelize, handleDatabaseQuery } = require('../db');
+const { sequelize } = require('../db');
 
 const Category = sequelize.define('Category', {
     id: {
@@ -12,36 +12,9 @@ const Category = sequelize.define('Category', {
     name: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    min: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    max: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    last_use: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    last_add: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'Category',
-    timestamps: true
+    tableName: 'Category'
 });
 
 
