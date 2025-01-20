@@ -1,16 +1,15 @@
 import React from 'react';
-import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText, IconButton, Tooltip, Typography,
-} from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import {useQuery} from "react-query";
-import useCustomFetch from "../Utils/CustomFetchForUseQuery";
 import CategoryType from "../Types/CategoryType";
 import {useTranslation} from "react-i18next";
 import { FixedSizeList, ListChildComponentProps } from 'react-window';
@@ -18,11 +17,13 @@ import EditIcon from '@mui/icons-material/Edit';
 import SquareButton from "../Utils/SquareButton.js";
 import {useDispatch, useSelector} from "react-redux";
 import type {RootReducerTypes} from "../Reducers";
+import LoadingIndicator from "../Utils/LoadingIndicator";
+import useCustomFetch from "../Utils/CustomFetchForUseQuery";
 
 
 const CategoriesDialog: React.FC = () => {
     const dispatch = useDispatch();
-    const { data: categories } = useQuery<CategoryType[]>('categories', useCustomFetch('categories'));
+    const { data: categories, isLoading, isError } = useQuery<CategoryType[]>('categories', useCustomFetch('categories'));
     const { t } = useTranslation();
     const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
 
@@ -49,7 +50,7 @@ const CategoriesDialog: React.FC = () => {
     }
 
     return (
-        <Dialog open={showCategoryList} onClose={close}>
+        <Dialog open={showCategoryList} onClose={close} fullWidth maxWidth="sm">
             <DialogTitle style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>{t('dialogTitles.categories')}</span>
                 <Tooltip title={t('dialogActions.add_category')}>
@@ -57,15 +58,23 @@ const CategoriesDialog: React.FC = () => {
                 </Tooltip>
             </DialogTitle>
             <DialogContent>
-                {categories && (
-                    <FixedSizeList
-                        height={400}
-                        width={360}
-                        itemSize={46}
-                        itemCount={categories.length}
-                    >
-                        {renderRow}
-                    </FixedSizeList>
+                {isLoading ? (
+                    <LoadingIndicator />
+                ) : isError ? (
+                    <Typography color="error">{t('errorMessages.offline')}</Typography>
+                ) : (
+                    categories?.length > 0 ? (
+                        <FixedSizeList
+                            height={400}
+                            width={360}
+                            itemSize={46}
+                            itemCount={categories.length}
+                        >
+                            {renderRow}
+                        </FixedSizeList>
+                    ) : (
+                        <Typography>{t('infoMessages.no_categories')}</Typography>
+                    )
                 )}
             </DialogContent>
             <DialogActions>

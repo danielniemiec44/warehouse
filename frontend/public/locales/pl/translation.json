@@ -22,10 +22,25 @@
     "categories": "Kategorie",
     "add_category": "Dodaj kategorię"
   },
+
+  "fieldsActions": {
+    "addNew": "Dodaj nowe pole",
+    "remove": "Usuń",
+    "edit": "Edytuj"
+  },
   "actions": {
     "search": "Szukaj"
   },
   "fields": {
     "category_name": "Nazwa kategorii"
+  },
+  "tooltips": { 
+    "categoryName": "Nazwa pola",
+    "categoryType": "Typ pola",
+    "maxLen": "Maksymalna długość",
+    "defaultValue": "Domyślna wartość"
+  },
+  "infoMessages": {
+    "no_categories": "Brak dostępnych kategorii, dodaj jakąś."
   }
 }

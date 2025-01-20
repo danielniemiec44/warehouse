@@ -2,7 +2,7 @@ import React from 'react';
 import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import {Stack} from "@mui/material";
+import Stack from '@mui/material/Stack';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -23,6 +23,7 @@ import CategoryEditor from "../Dialogs/CategoryEditor";
 export default function WarehouseIndex() {
     const dispatch = useDispatch();
     const editEntryId = useSelector((state: RootReducerTypes) => state.warehouse.editEntryId)
+    const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
 
 
 
@@ -100,7 +101,7 @@ export default function WarehouseIndex() {
                     </TableContainer>
                 <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
-            <CategoriesDialog />
+            {showCategoryList === true && <CategoriesDialog /> }
             <CategoryEditor />
         </div>
     );
