@@ -1,0 +1,31 @@
+{
+  "warehouse": {
+    "product_type": "Typ produktu",
+    "category": "Kategoria"
+  },
+  "errors": {
+    "fetchingDataError": "Nie udało się załadować danych dla: {{queryName}}",
+    "server_returned_error_code": "Serwer zwrócił kod błędu: {{errorCode}}",
+    "unexpected_error_occured": "Wystąpił nieoczekiwany błąd"
+  },
+  "newOrder": {
+    "choose_flavors": "Wybierz smaki"
+  },
+  "dialogActions": {
+    "cancel": "Anuluj",
+    "confirm": "Potwierdź",
+    "clear": "Wyczyść",
+    "add_category": "Dodaj kategorię",
+    "close": "Zamknij"
+  },
+  "dialogTitles": {
+    "categories": "Kategorie",
+    "add_category": "Dodaj kategorię"
+  },
+  "actions": {
+    "search": "Szukaj"
+  },
+  "fields": {
+    "category_name": "Nazwa kategorii"
+  }
+}

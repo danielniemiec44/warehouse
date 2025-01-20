@@ -1,4 +1,4 @@
-const User = require("../Entities/User");
+const User = require("../models/User");
 const bcrypt = require("bcrypt");
 
 const logIn = async (req, res) => {
