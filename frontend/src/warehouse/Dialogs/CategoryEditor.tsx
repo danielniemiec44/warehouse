@@ -13,15 +13,20 @@ import { grey } from '@mui/material/colors';
 import ModeIcon from '@mui/icons-material/Mode';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import Divider from '@mui/material/Divider';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Typography from '@mui/material/Typography';
 import AddNewItemButton from '../Modules/AddNewItemButton';
-import Fab from '@mui/material/Fab';
 import Stack from '@mui/material/Stack';
+
+interface CategoryFieldTypes {
+    name: string;
+    type: string;
+    defaultValue: number;
+    maxLen: number;
+}
 
 const CategoryEditor: React.FC = () => {
 
@@ -33,14 +38,24 @@ const CategoryEditor: React.FC = () => {
     const dispatch = useDispatch();
     const editCategoryId = useSelector((state: RootReducerTypes) => state.warehouse.editCategoryId);
 
-    const [name, setName] = useState<string>('');
-    const [categoryType, setcategoryType] = useState<string>('');
-    const [defaultValue, setDefaultValue] = useState<string>('');
-    const [maxLen, setMaxLen] = useState<string>('');
+    const [fieldTypes, setFieldTypes] = useState<CategoryFieldTypes[]>([
+        { value: 'string', label: 'String' },
+    ]);
 
     const handleClose = () => {
         dispatch({ type: 'CLOSE_EDIT_CATEGORY_MODAL' });
     };
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = event.target;
+        switch (name) {
+            case 'name':
+                setFieldTypes({ ...fieldTypes, name: value });         
+                break;
+            default:
+                break;
+        }
+    }
 
     return (
         <Dialog open={editCategoryId === 0} onClose={handleClose} fullWidth maxWidth="sm">
@@ -81,7 +96,8 @@ const CategoryEditor: React.FC = () => {
                                     fullWidth
                                     variant="outlined"
                                     value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={handleChange}
+                                    name={"name"}
                                 />
                             </Tooltip>
 
@@ -93,8 +109,8 @@ const CategoryEditor: React.FC = () => {
                                     type="text"
                                     fullWidth
                                     variant="outlined"
-                                    value={categoryType}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={handleChange}
+                                    name={"name"}
                                 />
                             </Tooltip>
 
@@ -103,11 +119,10 @@ const CategoryEditor: React.FC = () => {
                                     autoFocus
                                     margin="dense"
                                     label={t('tooltips.maxLen')}
-                                    type="text"
+                                    type="number"
                                     fullWidth
                                     variant="outlined"
-                                    value={maxLen}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={handleChange}
                                 />
                             </Tooltip>
 
@@ -116,11 +131,10 @@ const CategoryEditor: React.FC = () => {
                                     autoFocus
                                     margin="dense"
                                     label={t('tooltips.defaultValue')}
-                                    type="text"
+                                    type="number"
                                     fullWidth
                                     variant="outlined"
-                                    value={defaultValue}
-                                    onChange={(e) => setName(e.target.value)}
+                                    onChange={handleChange}
                                 />
                             </Tooltip>
                         </Grid>
