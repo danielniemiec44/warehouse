@@ -24,7 +24,7 @@ export default function WarehouseIndex() {
     const dispatch = useDispatch();
     const editEntryId = useSelector((state: RootReducerTypes) => state.warehouse.editEntryId)
     const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
-
+    const editCategoryId = useSelector((state: RootReducerTypes) => state.warehouse.editCategoryId);
 
 
     const EvenRow = styled(TableRow)(() => ({
@@ -102,7 +102,7 @@ export default function WarehouseIndex() {
                 <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
             {showCategoryList === true && <CategoriesDialog /> }
-            <CategoryEditor />
+            { editCategoryId >= 0 && <CategoryEditor /> }
         </div>
     );
 }
