@@ -12,6 +12,7 @@ import WarehouseIndex from "./warehouse/Pages/WarehouseIndex";
 import CustomizedSnackbar from "./warehouse/Utils/CustomizedSnackbar";
 import React from "react";
 import {QueryClient, QueryClientProvider} from "react-query";
+import SystemSettings from './warehouse/Pages/SystemSettings';
 
 function App() {
     const queryClient = new QueryClient({
@@ -36,6 +37,7 @@ function App() {
                     <Route path="/warehouse" element={<PrivateRoute><WarehouseIndex /></PrivateRoute>} />
                     <Route path="/main"  element={<PrivateRoute><Main /></PrivateRoute>} />
                     <Route path="/adddelivery" element={<PrivateRoute><AddDelivery /></PrivateRoute>} />
+                    <Route path="/settings" element={<PrivateRoute><SystemSettings /></PrivateRoute>} />
                 </Routes>
             </Router>
                 <CustomizedSnackbar />
