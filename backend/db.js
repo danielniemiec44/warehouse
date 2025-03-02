@@ -1,8 +1,12 @@
 const { Sequelize } = require('sequelize');
+const config = require('./config/config.json');
 
-const sequelize = new Sequelize('db_108545', 'db_108545', 'm0zAd54OzRIZNg9A', {
-    host: 'sql.22.svpj.link',
-    dialect: 'mysql'
+const env = process.env.NODE_ENV || 'development';
+const dbConfig = config[env];
+
+const sequelize = new Sequelize(dbConfig.database, dbConfig.username, dbConfig.password, {
+    host: dbConfig.host,
+    dialect: dbConfig.dialect
 });
 
 const handleDatabaseQuery = async (query, res) => {

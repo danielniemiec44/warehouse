@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useMemo} from 'react';
 import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -18,13 +18,16 @@ import { styled } from '@mui/material/styles';
 import CategoriesDialog from "../Dialogs/CategoriesDialog";
 import {RootReducerTypes} from "../Reducers";
 import CategoryEditor from "../Dialogs/CategoryEditor";
-
+import { useCategories } from "../Dialogs/CategoriesDialog";;
 
 export default function WarehouseIndex() {
     const dispatch = useDispatch();
     const editEntryId = useSelector((state: RootReducerTypes) => state.warehouse.editEntryId)
     const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
     const editCategoryId = useSelector((state: RootReducerTypes) => state.warehouse.editCategoryId);
+    const { data: categories } = useCategories();
+
+
 
 
     const EvenRow = styled(TableRow)(() => ({
@@ -102,7 +105,10 @@ export default function WarehouseIndex() {
                 <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
             {showCategoryList === true && <CategoriesDialog /> }
-            { editCategoryId >= 0 && <CategoryEditor /> }
+            {editCategoryId >= 0 && categories && (
+                <CategoryEditor />
+            )}
+
         </div>
     );
 }

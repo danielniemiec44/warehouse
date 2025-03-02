@@ -7,9 +7,15 @@ function useCustomFetch(endpoint, method = "GET", body = null) {
         });
 
         if (!response.ok) {
-            throw new Error(`Error: ${response.status}`);
+            let errorData;
+            try {
+                errorData = await response.json();
+            } catch (e) {
+                errorData = { errors: "An unknown error occurred" };
+            }
+            // Throw the parsed error so that it is caught in onError
+            throw errorData;
         }
-
         return response.json();
     };
 }

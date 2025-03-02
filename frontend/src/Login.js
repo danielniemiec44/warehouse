@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, { useCallback } from 'react';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -6,11 +6,12 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { grey } from '@mui/material/colors';
-import {useNavigate} from "react-router-dom";
-import CustomizedSnackbar from "./warehouse/Utils/CustomizedSnackbar";
-import eventEmitter from "./warehouse/Utils/eventEmitter";
+import { useNavigate } from "react-router-dom";
+// Removed unused imports:
+// import CustomizedSnackbar from "./warehouse/Utils/CustomizedSnackbar";
+// import eventEmitter from "./warehouse/Utils/eventEmitter";
 import { useDispatch } from 'react-redux';
-import {CustomFetch} from "./warehouse/Utils/CustomFetch";
+import { CustomFetch } from "./warehouse/Utils/CustomFetch";
 
 export default function Login() {
     const [login, setLogin] = React.useState("");
@@ -44,14 +45,28 @@ export default function Login() {
             null,
             `Pomyślnie zalogowano jako: ${login}`
         );
-    }, [login, password, navigate]);
+    }, [login, password, navigate, dispatch]);
 
     return (
         <div>
-            <Box sx={{ flexGrow: 1, display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", height: "100vh", width: "100%", backgroundImage: "url(https://www.mintsoft.com/media/chzlxsn3/types_of_warehouse_blog.png?width=1200&height=630&v=1dab8149acd8d70)", backgroundSize: "cover" }}>
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    display: "flex",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                    width: "100%",
+                    backgroundImage: "url(https://www.mintsoft.com/media/chzlxsn3/types_of_warehouse_blog.png?width=1200&height=630&v=1dab8149acd8d70)",
+                    backgroundSize: "cover"
+                }}
+            >
                 <Paper elevation={3} sx={{ padding: "20px", width: "300px", height: "auto" }}>
-                    <Typography variant="h5" colo={grey[500]} style={{ marginBottom: "20px" }}>Warehouse - Admin</Typography>
-                    <form onSubmit={(event) => {authMe(event)}}>
+                    <Typography variant="h5" color={grey[500]} style={{ marginBottom: "20px" }}>
+                        Warehouse - Admin
+                    </Typography>
+                    <form onSubmit={(event) => authMe(event)}>
                         <Stack direction="column" spacing={2}>
                             <TextField
                                 label="Nazwa użytkownika"
@@ -69,8 +84,12 @@ export default function Login() {
                                 fullWidth
                             />
                             <Stack direction="column" spacing={1}>
-                                <Button type={"submit"} variant="contained" color="primary" gutterBottom>Zaloguj się</Button>
-                                <Button variant="text" color="secondary" gutterBottom>Przejdź do sklepu</Button>
+                                <Button type="submit" variant="contained" color="primary" gutterBottom>
+                                    Zaloguj się
+                                </Button>
+                                <Button variant="text" color="secondary" gutterBottom>
+                                    Przejdź do sklepu
+                                </Button>
                             </Stack>
                         </Stack>
                     </form>

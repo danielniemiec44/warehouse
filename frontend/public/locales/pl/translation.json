@@ -22,7 +22,6 @@
     "categories": "Kategorie",
     "add_category": "Dodaj kategorię"
   },
-
   "fieldsActions": {
     "addNew": "Dodaj nowe pole",
     "remove": "Usuń",
@@ -35,12 +34,23 @@
     "category_name": "Nazwa kategorii"
   },
   "tooltips": { 
-    "categoryName": "Nazwa pola",
-    "categoryType": "Typ pola",
+    "fieldName": "Nazwa pola",
+    "fieldType": "Typ pola",
     "maxLen": "Maksymalna długość",
-    "defaultValue": "Domyślna wartość"
+    "defaultValue": "Domyślna wartość",
+    "categoryName": "Nazwa kategorii"
   },
   "infoMessages": {
-    "no_categories": "Brak dostępnych kategorii, dodaj jakąś."
+    "no_categories": "Brak dostępnych kategorii, dodaj jakąś.",
+    "category_add_success": "Kategoria dodana pomyślnie."
+  },
+  "options": {
+    "text": "Tekst",
+    "number": "Liczba",
+    "date": "Data",
+    "boolean": "Tak/Nie"
+  },
+  "errorMessages": {
+    "offline": "Brak stabilnego połączenia z serwerem."
   }
 }

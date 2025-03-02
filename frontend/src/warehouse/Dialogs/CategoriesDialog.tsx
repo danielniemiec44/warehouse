@@ -10,27 +10,32 @@ import ListItemText from '@mui/material/ListItemText';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import {useQuery} from "react-query";
-import CategoryType from "../Types/CategoryType";
 import {useTranslation} from "react-i18next";
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import EditIcon from '@mui/icons-material/Edit';
 import SquareButton from "../Utils/SquareButton.js";
 import {useDispatch, useSelector} from "react-redux";
 import type {RootReducerTypes} from "../Reducers";
 import LoadingIndicator from "../Utils/LoadingIndicator";
-import useCustomFetch from "../Utils/CustomFetchForUseQuery";
+import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
+import {CategoryTypes} from "../Types/CategoryTypes";
 
+
+const useCategories = () => {
+    return useQuery<CategoryTypes[]>(['categories'], () => CustomFetchForUseQuery('categories', "GET", null)());
+};
 
 const CategoriesDialog: React.FC = () => {
+
     const dispatch = useDispatch();
-    const { data: categories, isLoading, isError } = useQuery<CategoryType[]>('categories', useCustomFetch('categories'));
+    const { data: categories, isLoading, isError } = useCategories();
     const { t } = useTranslation();
     const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
 
     const renderRow = ({ index, style }: ListChildComponentProps) => {
         const category = categories ? categories[index] : null;
         return (
-            <ListItemButton style={style} key={index}>
+            <ListItemButton style={style} key={index} onClick={() => openCategoryEditor(category.id)}>
                 <ListItemIcon sx={{ fontSize: 36 }}>
                     🗂️
                 </ListItemIcon>
@@ -40,9 +45,9 @@ const CategoriesDialog: React.FC = () => {
         );
     };
 
-    const openCategoryEditor = () => {
-        console.log("Open category editor");
-        dispatch({ type: 'OPEN_EDIT_CATEGORY_MODAL', payload: 0 });
+    const openCategoryEditor = (id = 0) => {
+        console.log("Open category editor, id: ", id);
+        dispatch({ type: 'OPEN_EDIT_CATEGORY_MODAL', payload: id });
     }
 
     const close = () => {
@@ -54,7 +59,7 @@ const CategoriesDialog: React.FC = () => {
             <DialogTitle style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>{t('dialogTitles.categories')}</span>
                 <Tooltip title={t('dialogActions.add_category')}>
-                    <SquareButton onClick={openCategoryEditor} color="primary" size={"40px"} variant={"outlined"}>+</SquareButton>
+                    <SquareButton onClick={() => openCategoryEditor(5)} color="primary" size={"40px"} variant={"outlined"}>+</SquareButton>
                 </Tooltip>
             </DialogTitle>
             <DialogContent>
@@ -87,3 +92,4 @@ const CategoriesDialog: React.FC = () => {
 };
 
 export default CategoriesDialog;
+export { useCategories };

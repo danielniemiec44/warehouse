@@ -2,7 +2,7 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    const tableNames = ['ProductType', 'Users', 'Warehouse', 'Category'];
+    const tableNames = ['Category', 'Users', 'Warehouse', 'Category'];
     for (const tableName of tableNames) {
       const table = await queryInterface.describeTable(tableName);
       if (!table.createdAt) {
@@ -35,7 +35,7 @@ module.exports = {
   },
 
   down: async (queryInterface, Sequelize) => {
-    const tableNames = ['ProductType', 'Users', 'Warehouse', 'Category'];
+    const tableNames = ['Category', 'Users', 'Warehouse', 'Category'];
     for (const tableName of tableNames) {
       await queryInterface.removeColumn(tableName, 'createdAt');
       await queryInterface.removeColumn(tableName, 'updatedAt');

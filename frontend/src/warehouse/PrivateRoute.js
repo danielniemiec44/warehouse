@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const PrivateRoute = ({ children }) => {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ const PrivateRoute = ({ children }) => {
             if(location.pathname === '/') {
                 navigate('/main', { replace: true });
             } else {
-            navigate(location.pathname, { replace: true });
+                navigate(location.pathname, { replace: true });
             }
         }
         setLoading(false);
@@ -26,6 +27,10 @@ const PrivateRoute = ({ children }) => {
     }
 
     return children;
+};
+
+PrivateRoute.propTypes = {
+    children: PropTypes.node.isRequired,
 };
 
 export default PrivateRoute;
