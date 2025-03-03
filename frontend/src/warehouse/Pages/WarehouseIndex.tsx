@@ -17,7 +17,6 @@ import CategoryEditor from "../Dialogs/CategoryEditor";
 import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import {useTranslation} from "react-i18next";
 import {Box} from "@mui/material";
-import SquareButton from "../Utils/SquareButton";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 
@@ -32,12 +31,9 @@ export default function WarehouseIndex() {
     const { t } = useTranslation();
     // Update the useMemo hook to correctly access the customFields array
     const headers = useMemo(() => {
-        return categories?.find(category => {
-            if (category?.id === displayCategoryRows) {
-                return category?.customFields?.map(field => field.name);
-            }
-            return [];
-        })?.customFields?.map(field => field.name) || [];
+        return categories?.find(category =>
+            category?.id === displayCategoryRows
+        )?.customFields?.map(field => field.name) || [];
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
