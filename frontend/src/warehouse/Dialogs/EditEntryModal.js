@@ -94,8 +94,19 @@ export default function EditEntryModal() {
                 <FormControlLabel
                     key={field.id}
                     control={<Checkbox />}
-                    label={field.name ?? field.name}
+                    label={field.name}
                     name={field.name}
+                    onChange={(event) => {
+                        const fieldName = event.target.name;
+                        setFields((prevFields) => ({
+                            ...prevFields,
+                            customFields: {
+                                ...prevFields.customFields,
+                                [fieldName]: event.target.checked
+                            }
+                        }));
+                    }}
+                    checked={isCustomField ? Boolean(fields.customFields[field.name]) : Boolean(fields.baseProperties[field.name])}
                 />
             );
         }
