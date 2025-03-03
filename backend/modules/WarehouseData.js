@@ -66,16 +66,17 @@ const putCategory = async (req, res) => {
         const newCategoryName = req.body.newName;  // Now use 'newName' from the request body
         console.log("Received fieldTable:", fieldTable);
         console.log("Requested new category name:", newCategoryName);
+        const nameFromParams = req.params.name ?? "";
 
         // First, check if the category exists by the old name in req.params.name
         let category = await Category.findOne({
-            where: { name: req.params.name }
+            where: { name: nameFromParams }
         });
 
         // If the category is not found, return an error
         if (!category) {
-            console.log(`Category not found with the name "${req.params.name}"`);
-            return res.status(404).json({ errors: "Category not found" });
+            console.log(`Category not found with the name "${nameFromParams}". Creating one using new category name...`);
+            category = await Category.create({ name: newCategoryName }, { transaction });
         }
 
         // Log the current category name before updating
@@ -97,15 +98,18 @@ const putCategory = async (req, res) => {
             console.log("Category name is the same. No update needed.");
         }
 
-        // 1. Delete the fields that are not in the request
-        const fieldNamesInRequest = fieldTable.map(field => field.name);
-        await CategoryCustomField.destroy({
-            where: {
-                CategoryID: category.id,
-                name: { [Op.notIn]: fieldNamesInRequest }
-            },
-            transaction
-        });
+        if(nameFromParams !== "") {
+
+            // 1. Delete the fields that are not in the request
+            const fieldNamesInRequest = fieldTable.map(field => field.name);
+            await CategoryCustomField.destroy({
+                where: {
+                    CategoryID: category.id,
+                    name: {[Op.notIn]: fieldNamesInRequest}
+                },
+                transaction
+            });
+        }
 
         // 2. Add or update fields
         const updatePromises = fieldTable.map(async (field) => {

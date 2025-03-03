@@ -9,6 +9,7 @@ const addAdmin = require("./modules/admin"); // Import routera
 const Warehouse = require('./models/Warehouse');
 const Category = require('./models/Category');
 const CategoryCustomField = require('./models/CategoryCustomField');
+const WarehouseProperties = require('./models/WarehouseProperties');
 
 
 const PORT = 4000;
@@ -63,3 +64,7 @@ app.post('/api/warehouse/add', addNewItem);
 app.put('/api/warehouse/update', updateItemQuantity);
 app.put('/category/:name', addCategory);
 app.post('/users/add', addUser);
+
+
+app.put('/category/:name', addCategory);
+app.put('/category', addCategory);

@@ -19,6 +19,7 @@ import type {RootReducerTypes} from "../Reducers";
 import LoadingIndicator from "../Utils/LoadingIndicator";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {CategoryTypes} from "../Types/CategoryTypes";
+import IconButton from "@mui/material/IconButton";
 
 
 const useCategories = () => {
@@ -31,16 +32,22 @@ const CategoriesDialog: React.FC = () => {
     const { data: categories, isLoading, isError } = useCategories();
     const { t } = useTranslation();
     const showCategoryList = useSelector((state: RootReducerTypes) => state.warehouse.showCategoryList);
+    const displayCategoryRows = useSelector((state: RootReducerTypes) => state.warehouse.displayCategoryRows);
 
     const renderRow = ({ index, style }: ListChildComponentProps) => {
         const category = categories ? categories[index] : null;
         return (
-            <ListItemButton style={style} key={index} onClick={() => openCategoryEditor(category.id)}>
+            <ListItemButton style={{...style, color: "primary", backgroundColor: category?.id === displayCategoryRows && "#618833"}} key={index}  onClick={() => { dispatch({ type: "SELECT_DISPLAY_CATEGORY_ROWS", payload: category?.id }) }}>
                 <ListItemIcon sx={{ fontSize: 36 }}>
                     🗂️
                 </ListItemIcon>
                 <ListItemText primary={category?.name} />
-                <EditIcon />
+                <IconButton onClick={(event) => {
+                    event.stopPropagation();
+                    openCategoryEditor(category.id)
+            }}>
+                    <EditIcon />
+                </IconButton>
             </ListItemButton>
         );
     };
@@ -55,7 +62,7 @@ const CategoriesDialog: React.FC = () => {
     }
 
     return (
-        <Dialog open={showCategoryList} onClose={close} fullWidth maxWidth="sm">
+        <Dialog open={showCategoryList} onClose={close} fullWidth maxWidth="xs">
             <DialogTitle style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>{t('dialogTitles.categories')}</span>
                 <Tooltip title={t('dialogActions.add_category')}>
@@ -71,7 +78,7 @@ const CategoriesDialog: React.FC = () => {
                     categories?.length > 0 ? (
                         <FixedSizeList
                             height={400}
-                            width={360}
+                            width={400}
                             itemSize={46}
                             itemCount={categories.length}
                         >

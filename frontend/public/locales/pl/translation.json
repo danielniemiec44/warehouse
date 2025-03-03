@@ -28,10 +28,12 @@
     "edit": "Edytuj"
   },
   "actions": {
-    "search": "Szukaj"
+    "search": "Szukaj",
+    "addProduct": "Dodaj produkt"
   },
   "fields": {
-    "category_name": "Nazwa kategorii"
+    "category_name": "Nazwa kategorii",
+    "example_category_name": "Przykładowa kategoria 1"
   },
   "tooltips": { 
     "fieldName": "Nazwa pola",
@@ -42,7 +44,8 @@
   },
   "infoMessages": {
     "no_categories": "Brak dostępnych kategorii, dodaj jakąś.",
-    "category_add_success": "Kategoria dodana pomyślnie."
+    "category_add_success": "Kategoria dodana pomyślnie.",
+    "select_category_first": "Najpierw należy wybrać kategorię."
   },
   "options": {
     "text": "Tekst",

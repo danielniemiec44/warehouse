@@ -1,4 +1,4 @@
-import React, {HTMLInputTypeAttribute, useMemo, useState} from 'react';
+import React, {HTMLInputTypeAttribute, useCallback, useEffect, useMemo, useState} from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -100,8 +100,8 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
 
     const [categoryName, setcategoryName] = useState<string>(expectedCategory?.name || "");
     const [newCategoryName, setNewCategoryName] = useState<string>(categoryName);
-    const [fields, setFields] = useState<CategoryFieldTypes[]>(fieldsFromBackend);
-
+    const [fields, setFields] = useState<CategoryFieldTypes[]>(fieldsFromBackend ?? defaultExampleFields);
+    const [violationsPassed, setViolationsPassed] = useState<boolean>(false);
 
     const fieldTypes = [
         {
@@ -219,13 +219,24 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
         mutation.mutate();
     };
 
-    const violationsPassed = useMemo(() => {
-        return fields.some((field) =>
-            field.name === "" ||
-            !fieldTypes.some(ft => ft.type === field.type) ||
-            (field.type === 'text' && field.maxLen <= 0)
-        ) || newCategoryName === "";
-    }, [fields, categoryName]);
+    const validationCallback = useCallback(() => {
+        const checkViolations = () => {
+            return fields.some((field) =>
+                field.name === "" ||
+                !fieldTypes.some(ft => ft.type === field.type) ||
+                (field.type === 'text' && field.maxLen <= 0)
+            ) || newCategoryName === "";
+        };
+        setViolationsPassed(checkViolations());
+    }, [fields, newCategoryName]);
+
+    useEffect(() => {
+        validationCallback();
+    }, [fields, newCategoryName]);
+
+    useEffect(() => {
+        validationCallback();
+    }, []);
 
     const handleCategoryNameChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         setNewCategoryName(event.target.value);
