@@ -6,24 +6,7 @@ const WarehouseData = (req, res) => {
     handleDatabaseQuery(() => Warehouse.findAll({
         include: [
             { model: Category, required: true, as: 'category' },
-            { model: Category, required: true, as: 'Category' }
         ]
-    }), res);
-};
-
-const getWarehouseDataByID = (req, res) => {
-    handleDatabaseQuery(() => Warehouse.findOne({
-        where: { product_id: req.params.id },
-        include: [
-            { model: Category, required: true, as: 'category' },
-            { model: Category, required: true, as: 'Category' }
-        ]
-    }), res);
-};
-
-const setWarehouseDataByID = (req, res) => {
-    handleDatabaseQuery(() => Warehouse.update(req.body, {
-        where: { product_id: req.params.id },
     }), res);
 };
 
@@ -74,8 +57,6 @@ const addCategory = async (req, res) => {
 
 module.exports = {
     WarehouseData,
-    getWarehouseDataByID,
-    setWarehouseDataByID,
     getCategory,
     getCategories,
     addNewItem,

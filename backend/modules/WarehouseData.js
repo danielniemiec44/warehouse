@@ -5,12 +5,32 @@ const CategoryCustomField = require("../models/CategoryCustomField");
 const {Op} = require("sequelize");
 const WarehouseProperties = require("../models/WarehouseProperties");
 
-const WarehouseData = (req, res) => {
-    handleDatabaseQuery(() => Warehouse.findAll({
-        include: [
-            { model: Category, required: true, as: 'category' },
-        ]
-    }), res);
+const getWarehouseDataByCategoryId = async (req, res) => {
+    try {
+        const warehouses = await Warehouse.findAll({
+            where: { categoryId: req.params.categoryId },
+            include: [
+                {
+                    model: WarehouseProperties,
+                    as: 'properties',
+                    required: false,
+                    foreignKey: 'WarehouseID',
+                    include: [
+                        {
+                            model: CategoryCustomField,
+                            required: true,
+                            as: 'customField',
+                            foreignKey: 'CustomFieldID'
+                        }
+                    ]
+                }
+            ]
+        });
+        console.log(JSON.stringify(warehouses, null, 2)); // Log the raw results
+        res.json(warehouses);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 };
 
 const getCategories = (req, res) => {
@@ -138,56 +158,17 @@ const getWarehouseDataByID = (req, res) => {
 // the same logic as for categories
 const setWarehouseData = async (req, res) => {
     const categoryId = req.params.categoryId;
-    const productId = req.params.productId;
     const data = req.body;
-
-    if (!categoryId) {
-        return res.status(400).json({ errors: 'Category ID is required' });
-    }
-
-    if (!data?.baseProperties) {
-        return res.status(400).json({ errors: 'Base properties object is missing' });
-    }
-
-    if (data.baseProperties.name === undefined) {
-        return res.status(400).json({ errors: 'Name is required' });
-    }
-
-    if (data.baseProperties.quantity === undefined) {
-        return res.status(400).json({ errors: 'Quantity is required' });
-    }
 
     const transaction = await sequelize.transaction();
     try {
-        let warehouse = await Warehouse.findOne({
-            where: { categoryId },
-            transaction
-        });
+        const warehouse = await Warehouse.create({
+            categoryId,
+            name: data.baseProperties.name,
+            quantity: data.baseProperties.quantity
+        }, { transaction });
 
-        if (!warehouse) {
-            // Create new warehouse entry
-            warehouse = await Warehouse.create({
-                categoryId,
-                name: data.baseProperties.name,
-                quantity: data.baseProperties.quantity
-            }, { transaction });
-        } else {
-            // Update existing warehouse
-            await warehouse.update({
-                name: data.baseProperties.name,
-                quantity: data.baseProperties.quantity
-            }, { transaction });
-        }
-
-        // Handle custom fields
         if (data.customFields) {
-            // Delete existing properties
-            await WarehouseProperties.destroy({
-                where: { WarehouseID: warehouse.id },
-                transaction
-            });
-
-            // Create new properties
             const customFieldsPromises = Object.entries(data.customFields).map(async ([fieldName, fieldValue]) => {
                 const customField = await CategoryCustomField.findOne({
                     where: {
@@ -195,12 +176,21 @@ const setWarehouseData = async (req, res) => {
                         name: fieldName
                     }
                 });
+                console.log("Found custom field:", customField);
 
-                return WarehouseProperties.create({
+                if (!customField) {
+                    throw new Error(`Custom field '${fieldName}' not found for this category`);
+                }
+
+                const properties = {
                     WarehouseID: warehouse.id,
                     PropertyValue: fieldValue,
-                    CustomFieldID: customField ? customField.id : null
-                }, { transaction });
+                    CustomFieldID: customField.id
+                }
+
+                console.log("Creating warehouse property for field:", properties);
+
+                return WarehouseProperties.create(properties, { transaction });
             });
 
             await Promise.all(customFieldsPromises);
@@ -208,7 +198,7 @@ const setWarehouseData = async (req, res) => {
 
         await transaction.commit();
         return res.status(200).json({
-            message: 'Warehouse data updated successfully',
+            message: 'Warehouse data created successfully',
             warehouse
         });
 
@@ -216,14 +206,14 @@ const setWarehouseData = async (req, res) => {
         await transaction.rollback();
         console.error("Error:", error.message);
         return res.status(500).json({
-            errors: 'Could not update warehouse data',
+            error: 'Could not create warehouse data',
             message: error.message
         });
     }
 };
 
 module.exports = {
-    WarehouseData,
+    getWarehouseDataByCategoryId,
     getCategories,
     addCategory: putCategory,
     getWarehouseDataByID,

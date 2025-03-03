@@ -7,7 +7,7 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useDispatch, useSelector} from "react-redux";
-import EditEntryModal from "../Dialogs/EditEntryModal";
+import EditEntryModal from "../Dialogs/EditEntryModal.js";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {useQuery} from "react-query";
 import CategoriesDialog, {useCategories} from "../Dialogs/CategoriesDialog";
@@ -18,6 +18,7 @@ import {useTranslation} from "react-i18next";
 import {Box} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import {baseProperties} from "../constants";
 
 
 export default function WarehouseIndex() {
@@ -30,16 +31,12 @@ export default function WarehouseIndex() {
     const { t } = useTranslation();
     // Update the useMemo hook to correctly access the customFields array
     const headers = useMemo(() => {
-        return categories?.find(category =>
-            category?.id === displayCategoryRows
-        )?.customFields?.map(field => field.name) || [];
+        const baseHeaders = baseProperties.map(property => property.name);
+        const customFields = categories?.find(category => category?.id === displayCategoryRows)?.customFields?.map(field => field.name) || [];
+        return [...baseHeaders, ...customFields];
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
-
-    const handleOpenAddDeliveryModal = () => {
-        dispatch({type: 'OPEN_ADD_DELIVERY_MODAL'});
-    };
 
     const handleEditEntry = (id) => {
         dispatch({type: 'OPEN_EDIT_ENTRY_MODAL', payload: id});
@@ -49,7 +46,14 @@ export default function WarehouseIndex() {
         dispatch({type: 'OPEN_CATEGORY_LIST_MODAL'});
     }
 
-    const {data: warehouse} = useQuery<any>("warehouse", CustomFetchForUseQuery("warehouse", "GET", null));
+    const { data: warehouse } = useQuery<any>(
+        ["warehouse", displayCategoryRows],
+        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "GET", null)(),
+        {
+            enabled: displayCategoryRows > 0,
+            refetchInterval: 1500
+        }
+    );
 
     const renderRow = ({index, style}: ListChildComponentProps) => {
         const row = warehouse ? warehouse[index] : null;
@@ -61,9 +65,17 @@ export default function WarehouseIndex() {
 
         return (
             <TableRow style={{ ...style, display: 'flex', alignItems: 'center' }} key={index}>
-                {headers?.map((header, index) => (
-                    <TableCell key={index} style={style3}>{body[index]}</TableCell>
-                ))}
+                {headers?.map((header, index) => {
+                    if(baseProperties.map(property => property.name).includes(header)) {
+                        return (
+                            <TableCell key={index} style={style3}>{row[header]}</TableCell>
+                        )
+                    }
+                    return (
+                        <TableCell key={index} style={style3}>{row?.properties?.find((property) => property?.customField?.name === header)?.PropertyValue}</TableCell>
+                        )
+
+                })}
                 <TableCell>
                     <Button variant={"contained"} size={"small"} color={"primary"} onClick={() => handleEditEntry(row.id)}>Edytuj</Button>
                 </TableCell>
@@ -100,7 +112,7 @@ export default function WarehouseIndex() {
                     height={500}
                     itemSize={50}
                     alignItems={"center"}
-                    itemCount={categories?.length ?? 10}
+                    itemCount={warehouse?.length ?? 0}
                 >
                     {renderRow}
                 </FixedSizeList>

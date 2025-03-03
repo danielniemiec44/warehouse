@@ -37,6 +37,5 @@ const Category = sequelize.define('Category', {
     timestamps: true
 });
 
-Category.hasMany(CategoryCustomField, { as: 'customFields', foreignKey: 'CategoryID' });
 
 module.exports = Category;

@@ -2,7 +2,7 @@ const express = require("express");
 const { sequelize } = require("./db");
 const { encryptPassword } = require('./encrypt');
 const logIn = require("./modules/LogIn");
-const { WarehouseData, getCategories, addCategory, setWarehouseData} = require("./modules/WarehouseData");
+const { getWarehouseDataByCategoryId, getCategories, addCategory, setWarehouseData} = require("./modules/WarehouseData");
 const addUser = require('./modules/addUser'); // Upewnij się, że ścieżka jest poprawna
 const adminRoutes = require('./routes/AdminRoutes');
 const addAdmin = require("./modules/admin"); // Import routera
@@ -19,8 +19,66 @@ const adminPassword = 'zaq1@WSX';
 
 app.use(express.json());
 
-Warehouse.belongsTo(Category, { as: 'category' });
-CategoryCustomField.belongsTo(Category, { as: 'category', foreignKey: 'CategoryID', targetKey: 'id' });
+
+
+// Associations
+Category.hasMany(CategoryCustomField, {
+  foreignKey: 'CategoryID', // Matches the field in CategoryCustomField
+  as: 'customFields' // Alias for the association
+});
+
+Category.hasMany(Warehouse, {
+  foreignKey: 'categoryId', // Matches the field in Warehouse
+  as: 'warehouses' // Alias for the association
+});
+
+
+
+// Associations
+CategoryCustomField.belongsTo(Category, {
+  foreignKey: 'CategoryID', // Matches the field in CategoryCustomField
+  as: 'category' // Alias for the association
+});
+
+CategoryCustomField.hasMany(WarehouseProperties, {
+  foreignKey: 'CustomFieldID', // Matches the field in WarehouseProperties
+  as: 'properties' // Alias for the association
+});
+
+
+
+// Associations
+Warehouse.belongsTo(Category, {
+  foreignKey: 'categoryId', // Matches the field in Warehouse
+  as: 'category' // Alias for the association
+});
+
+Warehouse.hasMany(WarehouseProperties, {
+  foreignKey: 'WarehouseID', // Matches the field in WarehouseProperties
+  as: 'properties' // Alias for the association
+});
+
+
+
+// Associations
+WarehouseProperties.belongsTo(Warehouse, {
+  foreignKey: 'WarehouseID', // Matches the field in WarehouseProperties
+  as: 'warehouse' // Alias for the association
+});
+
+WarehouseProperties.belongsTo(CategoryCustomField, {
+  foreignKey: 'CustomFieldID',
+  targetKey: 'id',  // This is crucial for correct joining
+  as: 'customField'
+});
+
+
+
+
+
+
+
+
 
 app.listen(PORT, async () => {
   try {
@@ -45,12 +103,8 @@ app.post("/login", async (req, res) => {
   await logIn(req, res);
 });
 
-app.get('/warehouse', async (req, res) => {
-  await WarehouseData(req, res);
-});
-
-app.get('/warehouse/:id', async (req, res) => {
-  await getWarehouseDataByID(req, res);
+app.get('/warehouse/:categoryId', async (req, res) => {
+  await getWarehouseDataByCategoryId(req, res);
 });
 
 app.put('/warehouse/:categoryId/:productId', async (req, res) => {

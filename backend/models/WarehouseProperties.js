@@ -5,40 +5,44 @@ const CategoryCustomField = require('./CategoryCustomField');
 const WarehouseProperties = sequelize.define('WarehouseProperties', {
     id: {
         type: DataTypes.INTEGER,
-        allowNull: true,
-        autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
+        autoIncrement: true
     },
     WarehouseID: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        references: {
+            model: 'Warehouse',
+            key: 'id'
+        }
     },
     CustomFieldID: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: CategoryCustomField,
-            key: 'CustomFieldID'
-        },
-        field: 'CustomFieldID'
+            model: 'CategoryCustomField',
+            key: 'CustomFieldID'  // Changed from 'CategoryID'
+        }
     },
     PropertyValue: {
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    createdAt: {
-        type: DataTypes.DATE,
+        type: DataTypes.TEXT,
         allowNull: true,
-        defaultValue: DataTypes.NOW
-    },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        defaultValue: DataTypes.NOW
+        get() {
+            const rawValue = this.getDataValue('PropertyValue');
+            const customField = this.getDataValue('customField');
+            if (customField && customField.type === 'number' && rawValue !== null) {
+                return Number(rawValue);
+            }
+            return rawValue;
+        },
+        set(value) {
+            this.setDataValue('PropertyValue', value?.toString());
+        }
     }
 }, {
     tableName: 'WarehouseProperties',
     timestamps: true
 });
+
 
 module.exports = WarehouseProperties;

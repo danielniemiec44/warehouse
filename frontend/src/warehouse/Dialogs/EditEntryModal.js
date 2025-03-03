@@ -18,6 +18,7 @@ import Typography from "@mui/material/Typography";
 import {CheckBox} from "@mui/icons-material";
 import {Checkbox, FormControlLabel} from "@mui/material";
 import eventEmitter from "../Utils/eventEmitter";
+import {baseProperties} from "../constants";
 
 export default function EditEntryModal() {
     const editEntryId = useSelector((state) => state.warehouse.editEntryId);
@@ -26,11 +27,6 @@ export default function EditEntryModal() {
     const { t } = useTranslation();
     const displayCategoryRows = useSelector((state) => state.warehouse.displayCategoryRows);
     const { data: categories, isLoading, isError } = useCategories();
-
-    const baseProperties = {
-        name: t("fields.example_product_name"),
-        quantity: 1
-    };
 
     const generateExampleFieldsFromBackendForSelectedCategory = useMemo(() => {
         if (categories) {
@@ -98,7 +94,7 @@ export default function EditEntryModal() {
                 <FormControlLabel
                     key={field.id}
                     control={<Checkbox />}
-                    label={field.name}
+                    label={field.name ?? field.name}
                     name={field.name}
                 />
             );
@@ -109,7 +105,7 @@ export default function EditEntryModal() {
                 <TextField
                     key={field.id}
                     fullWidth
-                    label={field.name}
+                    label={field.label ?? field.name}
                     variant={"outlined"}
                     type={"number"}
                     value={isCustomField ? fields.customFields[field.name] : fields.baseProperties[field.name]}
@@ -123,7 +119,7 @@ export default function EditEntryModal() {
             <TextField
                 key={field.id}
                 fullWidth
-                label={field.name}
+                label={field.label ?? field.name}
                 variant={"outlined"}
                 type={field.type === "number" ? "number" : "text"}
                 value={isCustomField ? fields.customFields[field.name] : fields.baseProperties[field.name]}
@@ -136,25 +132,41 @@ export default function EditEntryModal() {
 
 
     const mutation = useMutation(() => {
-        console.log("sending with", displayCategoryRows, editEntryId, fields);
+        const modifiedFields = {
+            baseProperties: Object.fromEntries(
+                Object.entries(fields.baseProperties).map(([key, value]) => {
+                    if (key === 'quantity') {
+                        return [key, Number(value) || 0];
+                    }
+                    return [key, value];
+                })
+            ),
+            //convert EVERY customFields values to string
+            customFields: Object.fromEntries(
+                Object.entries(fields.customFields).map(([key, value]) => {
+                    return [key, value.toString()];
+                })
+            )
+
+        };
+
+        console.log("Sending modified fields:", modifiedFields);
         return CustomFetchForUseQuery(
-                `/warehouse/${displayCategoryRows}/${editEntryId}`,
-                "PUT",
-                fields
-            )();
+            `/warehouse/${displayCategoryRows}/${editEntryId}`,
+            "PUT",
+            modifiedFields
+        )();
+    }, {
+        onSuccess: () => {
+            eventEmitter.emit('showSnackbar', { message: t("snackbarMessages.entry_saved"), transition: 'slide', variant: 'success' });
+            queryClient.invalidateQueries("warehouse");
+            handleClose();
         },
-        {
-            onSuccess: () => {
-                eventEmitter.emit('showSnackbar', { message: t("snackbarMessages.entry_saved"), transition: 'slide', variant: 'success' });
-                queryClient.invalidateQueries("warehouse");
-                handleClose();
-            },
-            onError: (error) => {
-                eventEmitter.emit('showSnackbar', { message: error, transition: 'slide', variant: 'error' });
-                console.error(error);
-            }
+        onError: (error) => {
+            eventEmitter.emit('showSnackbar', { message: error, transition: 'slide', variant: 'error' });
+            console.error("Mutation error:", error);
         }
-    );
+    });
 
 
     const saveChanges = () => {
@@ -176,8 +188,8 @@ export default function EditEntryModal() {
             <DialogContent>
                 <Stack spacing={3} sx={{ p: 2 }}>
                     <Typography>{t("warehouse.base_properties")}:</Typography>
-                    {Object.keys(fields.baseProperties).map((key) =>
-                        showCorrectFieldType({ name: key, type: typeof fields.baseProperties[key] === "number" ? "number" : "text" }, false)
+                    {baseProperties.map((key) =>
+                        showCorrectFieldType(key, false)
                     )}
                     <hr />
                     <Typography>{t("warehouse.category_properties")}:</Typography>
