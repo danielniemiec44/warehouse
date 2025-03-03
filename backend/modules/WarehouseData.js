@@ -3,27 +3,13 @@ const Category = require('../models/Category');
 const { handleDatabaseQuery, sequelize} = require("../db");
 const CategoryCustomField = require("../models/CategoryCustomField");
 const {Op} = require("sequelize");
+const WarehouseProperties = require("../models/WarehouseProperties");
 
 const WarehouseData = (req, res) => {
     handleDatabaseQuery(() => Warehouse.findAll({
         include: [
             { model: Category, required: true, as: 'category' },
         ]
-    }), res);
-};
-
-const getWarehouseDataByID = (req, res) => {
-    handleDatabaseQuery(() => Warehouse.findOne({
-        where: { product_id: req.params.id },
-        include: [
-            { model: Category, required: true, as: 'category' },
-        ]
-    }), res);
-};
-
-const setWarehouseDataByID = (req, res) => {
-    handleDatabaseQuery(() => Warehouse.update(req.body, {
-        where: { product_id: req.params.id },
     }), res);
 };
 
@@ -35,29 +21,6 @@ const getCategories = (req, res) => {
     }), res);
 };
 
-const addNewItem = async (req, res) => {
-    try {
-        const { name, quantity, categoryId } = req.body;
-        const newItem = await Warehouse.create({ name, quantity, categoryId });
-        res.status(201).json(newItem);
-    } catch (error) {
-        res.status(500).json({ error: 'Could not add new item' });
-    }
-};
-
-const updateItemQuantity = async (req, res) => {
-    try {
-        const { id, quantity } = req.body;
-        const item = await Warehouse.findByPk(id);
-        if (!item) return res.status(404).json({ error: 'Item not found' });
-
-        item.quantity = quantity;
-        await item.save();
-        res.status(200).json(item);
-    } catch (error) {
-        res.status(500).json({ error: 'Could not update quantity' });
-    }
-};
 
 const putCategory = async (req, res) => {
     const transaction = await sequelize.transaction();
@@ -167,18 +130,102 @@ const putCategory = async (req, res) => {
     }
 };
 
+const getWarehouseDataByID = (req, res) => {
+    const id = req.params.id;
+    handleDatabaseQuery(() => Warehouse.findByPk(id), res);
+};
 
+// the same logic as for categories
+const setWarehouseData = async (req, res) => {
+    const categoryId = req.params.categoryId;
+    const productId = req.params.productId;
+    const data = req.body;
 
+    if (!categoryId) {
+        return res.status(400).json({ errors: 'Category ID is required' });
+    }
 
+    if (!data?.baseProperties) {
+        return res.status(400).json({ errors: 'Base properties object is missing' });
+    }
 
+    if (data.baseProperties.name === undefined) {
+        return res.status(400).json({ errors: 'Name is required' });
+    }
 
+    if (data.baseProperties.quantity === undefined) {
+        return res.status(400).json({ errors: 'Quantity is required' });
+    }
+
+    const transaction = await sequelize.transaction();
+    try {
+        let warehouse = await Warehouse.findOne({
+            where: { categoryId },
+            transaction
+        });
+
+        if (!warehouse) {
+            // Create new warehouse entry
+            warehouse = await Warehouse.create({
+                categoryId,
+                name: data.baseProperties.name,
+                quantity: data.baseProperties.quantity
+            }, { transaction });
+        } else {
+            // Update existing warehouse
+            await warehouse.update({
+                name: data.baseProperties.name,
+                quantity: data.baseProperties.quantity
+            }, { transaction });
+        }
+
+        // Handle custom fields
+        if (data.customFields) {
+            // Delete existing properties
+            await WarehouseProperties.destroy({
+                where: { WarehouseID: warehouse.id },
+                transaction
+            });
+
+            // Create new properties
+            const customFieldsPromises = Object.entries(data.customFields).map(async ([fieldName, fieldValue]) => {
+                const customField = await CategoryCustomField.findOne({
+                    where: {
+                        CategoryID: categoryId,
+                        name: fieldName
+                    }
+                });
+
+                return WarehouseProperties.create({
+                    WarehouseID: warehouse.id,
+                    PropertyValue: fieldValue,
+                    CustomFieldID: customField ? customField.id : null
+                }, { transaction });
+            });
+
+            await Promise.all(customFieldsPromises);
+        }
+
+        await transaction.commit();
+        return res.status(200).json({
+            message: 'Warehouse data updated successfully',
+            warehouse
+        });
+
+    } catch (error) {
+        await transaction.rollback();
+        console.error("Error:", error.message);
+        return res.status(500).json({
+            errors: 'Could not update warehouse data',
+            message: error.message
+        });
+    }
+};
 
 module.exports = {
     WarehouseData,
-    getWarehouseDataByID,
-    setWarehouseDataByID,
     getCategories,
-    addNewItem,
-    updateItemQuantity,
-    addCategory: putCategory
+    addCategory: putCategory,
+    getWarehouseDataByID,
+    setWarehouseData
 };

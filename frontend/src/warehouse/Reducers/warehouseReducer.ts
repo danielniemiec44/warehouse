@@ -31,7 +31,7 @@ const warehouseReducer = (state = initialState, action) => {
                 ...state,
                 editEntryId: action.payload
             };
-        case 'CLOSE_EDIT_DELIVERY_MODAL':
+        case 'CLOSE_EDIT_ENTRY_MODAL':
             return {
                 ...state,
                 editEntryId: initialState.editEntryId

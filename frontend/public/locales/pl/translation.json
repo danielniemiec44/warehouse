@@ -1,7 +1,9 @@
 {
   "warehouse": {
     "product_type": "Typ produktu",
-    "category": "Kategoria"
+    "category": "Kategoria",
+    "base_properties": "Podstawowe właściwości",
+    "category_properties": "Właściwości kategorii"
   },
   "errors": {
     "fetchingDataError": "Nie udało się załadować danych dla: {{queryName}}",
@@ -20,7 +22,9 @@
   },
   "dialogTitles": {
     "categories": "Kategorie",
-    "add_category": "Dodaj kategorię"
+    "add_category": "Dodaj kategorię",
+    "add_new_entry": "Dodaj wpis",
+    "edit_entry": "Edytuj wpis"
   },
   "fieldsActions": {
     "addNew": "Dodaj nowe pole",
@@ -33,7 +37,8 @@
   },
   "fields": {
     "category_name": "Nazwa kategorii",
-    "example_category_name": "Przykładowa kategoria 1"
+    "example_category_name": "Przykładowa kategoria 1",
+    "example_product_name": "Przykładowy produkt 1"
   },
   "tooltips": { 
     "fieldName": "Nazwa pola",
@@ -55,5 +60,8 @@
   },
   "errorMessages": {
     "offline": "Brak stabilnego połączenia z serwerem."
+  },
+  "snackbarMessages": {
+    "entry_saved": "Pomyślnie dokonano wpisu."
   }
 }

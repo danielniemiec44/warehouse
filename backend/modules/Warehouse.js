@@ -1,6 +1,5 @@
 const Warehouse = require('./Warehouse');
 const Category = require('../models/Category');
-const Category = require('../models/Category');
 const { handleDatabaseQuery } = require("../db");
 
 const WarehouseData = (req, res) => {

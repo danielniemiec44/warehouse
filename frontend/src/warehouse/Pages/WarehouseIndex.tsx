@@ -7,7 +7,6 @@ import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import {useDispatch, useSelector} from "react-redux";
-import NewDeliveryDialog from "../Dialogs/NewDeliveryDialog";
 import EditEntryModal from "../Dialogs/EditEntryModal";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import {useQuery} from "react-query";
@@ -92,7 +91,7 @@ export default function WarehouseIndex() {
                         ))}
                         <TableCell>
                             <Tooltip title={"Dodaj produkt"} arrow>
-                                <Button variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
+                                <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
                             </Tooltip>
                 </TableCell>
                     </TableRow>
@@ -108,7 +107,6 @@ export default function WarehouseIndex() {
                 </Box>
             )}
 
-                <NewDeliveryDialog />
             { editEntryId >= 0 && <EditEntryModal /> }
             {showCategoryList === true && <CategoriesDialog /> }
             {editCategoryId >= 0 && categories && (

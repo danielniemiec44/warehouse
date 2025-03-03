@@ -30,13 +30,6 @@ import {useCategories} from "./CategoriesDialog";
 const defaultExampleFields = [
     {
         id: -1,
-        name: "Nazwa",
-        type: "text",
-        defaultValue: "hutniczy",
-        maxLen: 20,
-    },
-    {
-        id: -1,
         name: "Zawartość tlenku wapnia (%)",
         type: "number",
         defaultValue: "60",

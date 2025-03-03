@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -13,47 +13,152 @@ import Stack from "@mui/material/Stack";
 import LoadingIndicator from "../Utils/LoadingIndicator";
 import {useTranslation} from "react-i18next";
 import FetchedSelect from "../Utils/FetchedSelect.tsx";
+import {useCategories} from "./CategoriesDialog";
+import Typography from "@mui/material/Typography";
+import {CheckBox} from "@mui/icons-material";
+import {Checkbox, FormControlLabel} from "@mui/material";
+import eventEmitter from "../Utils/eventEmitter";
 
 export default function EditEntryModal() {
     const editEntryId = useSelector((state) => state.warehouse.editEntryId);
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
     const { t } = useTranslation();
+    const displayCategoryRows = useSelector((state) => state.warehouse.displayCategoryRows);
+    const { data: categories, isLoading, isError } = useCategories();
 
-    const {
-        data: warehouseData,
-        isLoading: isLoadingDataFetch,
-        isSuccess: isLoadingDataSuccess
-    } = useQuery(["warehouseData", editEntryId], CustomFetchForUseQuery(`warehouse/${editEntryId}`, "GET", null));
-    const [changedWarehouseData, setChangedWarehouseData] = React.useState(null);
+    const baseProperties = {
+        name: t("fields.example_product_name"),
+        quantity: 1
+    };
 
-    if (isLoadingDataSuccess && !changedWarehouseData) {
-        setChangedWarehouseData(warehouseData);
-    }
+    const generateExampleFieldsFromBackendForSelectedCategory = useMemo(() => {
+        if (categories) {
+            const selectedCategory = categories.find((category) => category.id === displayCategoryRows);
+            const fieldsFromBackend = {};
+            selectedCategory?.customFields.forEach((field) => {
+                if (field.type === "text") {
+                    fieldsFromBackend[field.name] = t("fields.example_text");
+                } else if (field.type === "number") {
+                    fieldsFromBackend[field.name] = Math.floor(Math.random() * 100);
+                } else if (field.type === "checkbox") {
+                    fieldsFromBackend[field.name] = false;
+                }
+            });
+            return fieldsFromBackend;
+        }
+        return {};
+    }, [displayCategoryRows, categories]);
+
+    const [fields, setFields] = useState({
+        baseProperties: {name: "Przykład", quantity: 0},
+        customFields: {}
+    });
+
+    useEffect(() => {
+        console.log("fields changed to: ", fields);
+    }, [fields]);
+
+    useEffect(() => {
+        setFields((prevFields) => ({
+            baseProperties: { ...prevFields.baseProperties },
+            customFields: generateExampleFieldsFromBackendForSelectedCategory
+        }));
+    }, [generateExampleFieldsFromBackendForSelectedCategory]);
 
     const handleClose = () => {
-        dispatch({type: 'CLOSE_EDIT_DELIVERY_MODAL'});
+        dispatch({ type: "CLOSE_EDIT_ENTRY_MODAL" });
     }
 
-    const mutation = useMutation(
-        (newData) => CustomFetchForUseQuery(`warehouse/${editEntryId}`, "PUT", newData)(),
+    const changeFieldValue = (event) => {
+        let fieldName = event.target.name;
+        setFields((prevFields) => ({
+            ...prevFields,
+            baseProperties: {
+                ...prevFields.baseProperties,
+                [fieldName]: event.target.value
+            }
+        }));
+    }
+
+    const changeCustomFieldValue = (event) => {
+        let fieldName = event.target.name;
+        setFields((prevFields) => ({
+            ...prevFields,
+            customFields: {
+                ...prevFields.customFields,
+                [fieldName]: event.target.value
+            }
+        }));
+    }
+
+    const showCorrectFieldType = (field, isCustomField) => {
+        if (field.type === "checkbox") {
+            return (
+                <FormControlLabel
+                    key={field.id}
+                    control={<Checkbox />}
+                    label={field.name}
+                    name={field.name}
+                />
+            );
+        }
+
+        if(field.type === "number") {
+            return (
+                <TextField
+                    key={field.id}
+                    fullWidth
+                    label={field.name}
+                    variant={"outlined"}
+                    type={"number"}
+                    value={isCustomField ? fields.customFields[field.name] : fields.baseProperties[field.name]}
+                    onChange={isCustomField ? changeCustomFieldValue : changeFieldValue}
+                    name={field.name}
+                />
+            );
+        }
+
+        return (
+            <TextField
+                key={field.id}
+                fullWidth
+                label={field.name}
+                variant={"outlined"}
+                type={field.type === "number" ? "number" : "text"}
+                value={isCustomField ? fields.customFields[field.name] : fields.baseProperties[field.name]}
+                onChange={isCustomField ? changeCustomFieldValue : changeFieldValue}
+                name={field.name}
+            />
+        );
+    }
+
+
+
+    const mutation = useMutation(() => {
+        console.log("sending with", displayCategoryRows, editEntryId, fields);
+        return CustomFetchForUseQuery(
+                `/warehouse/${displayCategoryRows}/${editEntryId}`,
+                "PUT",
+                fields
+            )();
+        },
         {
             onSuccess: () => {
-                queryClient.invalidateQueries(["warehouseData", editEntryId])
-                    .then(() => queryClient.invalidateQueries("warehouse"))
-                    .then(handleClose);
+                eventEmitter.emit('showSnackbar', { message: t("snackbarMessages.entry_saved"), transition: 'slide', variant: 'success' });
+                queryClient.invalidateQueries("warehouse");
+                handleClose();
             },
+            onError: (error) => {
+                eventEmitter.emit('showSnackbar', { message: error, transition: 'slide', variant: 'error' });
+                console.error(error);
+            }
         }
     );
 
-    const save = () => {
-        mutation.mutate(changedWarehouseData);
-    }
 
-    const handleChange = (field) => {
-        return (e) => {
-            setChangedWarehouseData({...changedWarehouseData, [field]: e.target.value});
-        };
+    const saveChanges = () => {
+        mutation.mutate();
     }
 
     return(
@@ -61,34 +166,30 @@ export default function EditEntryModal() {
             open={true}
             aria-labelledby="alert-dialog-title"
             aria-describedby="alert-dialog-description"
+            maxWidth={"sm"}
+            fullWidth
         >
             <DialogTitle id="alert-dialog-title">
-                Edytuj wpis
+                {editEntryId === 0 && t("dialogTitles.add_new_entry")}
+                {editEntryId > 0 && t("dialogTitles.edit_entry")}
             </DialogTitle>
             <DialogContent>
-                {( isLoadingDataFetch) &&
-                    <LoadingIndicator />
-                }
-                {warehouseData && changedWarehouseData && (
-                    <Stack spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField type={"text"} value={changedWarehouseData.product_name} onChange={handleChange("product_name")} fullWidth/>
-                        </Grid>
-                        <FetchedSelect label={t("warehouse.product_type")} value={changedWarehouseData.product_type_id} queryName={"productTypes"} endpoint={"productTypes"} method={"GET"} onChange={handleChange("product_type_id")} />
-                        <FetchedSelect label={t("warehouse.category")} value={changedWarehouseData.product_category_id} queryName={"categories"} endpoint={"categories"} method={"GET"} onChange={handleChange("product_category_id")} />
-                            <TextField type={"number"} value={changedWarehouseData.available_condition} onChange={handleChange("available_condition")} fullWidth />
-                            <TextField type={"number"} value={changedWarehouseData.maximum_condition} onChange={handleChange("maximum_condition")} fullWidth />
-                    </Stack>
-                )}
+                <Stack spacing={3} sx={{ p: 2 }}>
+                    <Typography>{t("warehouse.base_properties")}:</Typography>
+                    {Object.keys(fields.baseProperties).map((key) =>
+                        showCorrectFieldType({ name: key, type: typeof fields.baseProperties[key] === "number" ? "number" : "text" }, false)
+                    )}
+                    <hr />
+                    <Typography>{t("warehouse.category_properties")}:</Typography>
+                    {categories?.find((category) => category?.id === displayCategoryRows)?.customFields?.map((field) =>
+                        showCorrectFieldType(field, true)
+                    )}
+                </Stack>
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose} color={"error"}>Zamknij okno (bez zapisywania)</Button>
-                <Button onClick={save} variant={"contained"}>
-                    Zapisz
-                </Button>
+                <Button onClick={saveChanges} variant={"contained"}>Zapisz</Button>
             </DialogActions>
         </Dialog>
     );
-
-
 }
