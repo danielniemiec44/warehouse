@@ -184,7 +184,8 @@ const setWarehouseData = async (req, res) => {
 
                 const properties = {
                     WarehouseID: warehouse.id,
-                    PropertyValue: fieldValue,
+                    // if empty get defualt value from databse
+                    PropertyValue: !!fieldValue ? fieldValue : customField.defaultValue,
                     CustomFieldID: customField.id
                 }
 

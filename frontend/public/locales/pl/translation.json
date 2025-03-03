@@ -63,5 +63,8 @@
   },
   "snackbarMessages": {
     "entry_saved": "Pomyślnie dokonano wpisu."
+  },
+  "fields": {
+    "example_text": "Przykładowy tekst"
   }
 }
