@@ -42,7 +42,7 @@ export default function WarehouseIndex() {
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
-    const [maxRows, setMaxRows] = React.useState(10);
+    const [maxRows, setMaxRows] = React.useState(2);
 
     const handleChangeMaxRows = (event) => {
         const numericValue = Number(event.target.value);
@@ -61,10 +61,12 @@ export default function WarehouseIndex() {
     }
 
     const { data: warehouse } = useQuery<any>(
-        ["warehouse", displayCategoryRows],
-        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "GET", null)(),
+        ["warehouse", displayCategoryRows, maxRows],
+        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "POST", {
+            "maxRows": maxRows
+        })(),
         {
-            enabled: displayCategoryRows > 0,
+            enabled: displayCategoryRows > 0 && maxRows > 0,
             refetchInterval: 1500
         }
     );

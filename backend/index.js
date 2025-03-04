@@ -103,7 +103,7 @@ app.post("/login", async (req, res) => {
   await logIn(req, res);
 });
 
-app.get('/warehouse/:categoryId', async (req, res) => {
+app.post('/warehouse/:categoryId', async (req, res) => {
   await getWarehouseDataByCategoryId(req, res);
 });
 

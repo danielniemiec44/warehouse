@@ -24,7 +24,8 @@ const getWarehouseDataByCategoryId = async (req, res) => {
                         }
                     ]
                 }
-            ]
+            ],
+            limit: req.body.maxRows ?? undefined
         });
         console.log(JSON.stringify(warehouses, null, 2)); // Log the raw results
         res.json(warehouses);
