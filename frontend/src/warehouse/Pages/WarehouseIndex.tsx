@@ -15,12 +15,15 @@ import {RootReducerTypes} from "../Reducers";
 import CategoryEditor from "../Dialogs/CategoryEditor";
 import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import {useTranslation} from "react-i18next";
-import {Box} from "@mui/material";
+import {Autocomplete, Box, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {baseProperties} from "../constants";
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import IconButton from "@mui/material/IconButton";
+import Grid from "@mui/material/Grid";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import TextField from "@mui/material/TextField";
 
 
 export default function WarehouseIndex() {
@@ -39,6 +42,15 @@ export default function WarehouseIndex() {
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
+    const [maxRows, setMaxRows] = React.useState(10);
+
+    const handleChangeMaxRows = (event) => {
+        const numericValue = Number(event.target.value);
+        if (!isNaN(numericValue) && numericValue > 0) {
+            setMaxRows(event.target.value);
+        }
+    };
+
 
     const handleEditEntry = (id) => {
         dispatch({type: 'OPEN_EDIT_ENTRY_MODAL', payload: id});
@@ -90,7 +102,33 @@ export default function WarehouseIndex() {
         <div>
         <AppBar/>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}>
-                <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
+                <Grid container spacing={3}>
+                    <Grid item>
+                        <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
+                    </Grid>
+                    <Grid item>
+                        <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                        <Button><ArrowBackIosNewIcon /></Button>
+                            <Select
+                                value={maxRows}
+                                onChange={handleChangeMaxRows}
+                                renderValue={(selected) => {
+                                    if (selected === 10) {
+                                        return "1-10";
+                                    }
+                                    return selected;
+                                }}
+                            >
+                                {[5, 10, 20, 50, 100].map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                        {option}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        <Button><ArrowForwardIosIcon /></Button>
+                        </Stack>
+                    </Grid>
+                </Grid>
             <Stack direction={"row"} spacing={5}>
                 {/*<Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>*/}
                     <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
