@@ -19,6 +19,8 @@ import {Box} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {baseProperties} from "../constants";
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import IconButton from "@mui/material/IconButton";
 
 
 export default function WarehouseIndex() {
@@ -89,7 +91,7 @@ export default function WarehouseIndex() {
         <AppBar/>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}>
                 <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
-            <Stack direction={"row"}>
+            <Stack direction={"row"} spacing={5}>
                 {/*<Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>*/}
                     <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
             </Stack>
@@ -99,7 +101,14 @@ export default function WarehouseIndex() {
                 <TableHead>
                     <TableRow style={style2}>
                         {headers.map((header, index) => (
-                            <TableCell key={index} style={style2}>{header}</TableCell>
+                            <TableCell key={index} style={style2}>
+                                <Stack direction={"row"} spacing={1} justifyContent={"center"} alignItems={"center"}>
+                                    <Typography>{header}</Typography>
+                                    <Button>
+                                        <FilterAltIcon />
+                                    </Button>
+                            </Stack>
+                            </TableCell>
                         ))}
                         <TableCell>
                             <Tooltip title={"Dodaj produkt"} arrow>
