@@ -47,7 +47,7 @@ export default function EditEntryModal() {
     }, [displayCategoryRows, categories]);
 
     const [fields, setFields] = useState({
-        baseProperties: {name: "Przykład", quantity: 0},
+        baseProperties: {name: "Przykład", quantity: 0, barcode: null},
         customFields: {}
     });
 

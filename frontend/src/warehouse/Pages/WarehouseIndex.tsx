@@ -77,7 +77,7 @@ export default function WarehouseIndex() {
 
                 })}
                 <TableCell>
-                    <Button variant={"contained"} size={"small"} color={"primary"} onClick={() => handleEditEntry(row.id)}>Edytuj</Button>
+                    <Button disabled variant={"contained"} size={"small"} color={"primary"} onClick={() => handleEditEntry(row.id)}>Edytuj (dostępne wkrótce)</Button>
                 </TableCell>
             </TableRow>
         );
