@@ -7,6 +7,12 @@ const WarehouseProperties = require("../models/WarehouseProperties");
 
 const getWarehouseDataByCategoryId = async (req, res) => {
     try {
+        const totalRows = await Warehouse.count({
+            where: { categoryId: req.params.categoryId }
+        });
+        const page = req?.body?.page ?? 1;
+        const maxRows = req?.body?.maxRows ?? 10;
+
         const warehouses = await Warehouse.findAll({
             where: { categoryId: req.params.categoryId },
             include: [
@@ -25,10 +31,11 @@ const getWarehouseDataByCategoryId = async (req, res) => {
                     ]
                 }
             ],
-            limit: req.body.maxRows ?? undefined
+            limit: maxRows,
+            offset: (page - 1) * maxRows
         });
         console.log(JSON.stringify(warehouses, null, 2)); // Log the raw results
-        res.json(warehouses);
+        res.json({ totalRows, warehouses });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

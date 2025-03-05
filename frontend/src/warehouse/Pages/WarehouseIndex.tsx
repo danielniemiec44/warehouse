@@ -1,4 +1,4 @@
-import React, {CSSProperties, useMemo} from 'react';
+import React, {CSSProperties, useEffect, useMemo} from 'react';
 import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -43,6 +43,34 @@ export default function WarehouseIndex() {
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
     const [maxRows, setMaxRows] = React.useState(2);
+    const [page, setPage] = React.useState(1);
+
+    const { data: warehouse } = useQuery<any>(
+        ["warehouse", displayCategoryRows, maxRows, page],
+        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "POST", {
+            "maxRows": maxRows,
+            "page": page
+        })(),
+        {
+            enabled: displayCategoryRows > 0 && maxRows > 0,
+            refetchInterval: 1500
+        }
+    );
+
+    // changing page basing on direction (1 or -1)
+    const changePage = (direction) => {
+        if (page + direction > Math.ceil(warehouse?.totalRows / maxRows) || page + direction < 1)
+            return;
+        setPage(page + direction);
+    }
+
+
+    // set page automatically to first if out fo range
+    useEffect(() => {
+        if (page > Math.ceil(warehouse?.totalRows / maxRows) || page < 1)
+            setPage(1);
+    }, [page, warehouse, maxRows]);
+
 
     const handleChangeMaxRows = (event) => {
         const numericValue = Number(event.target.value);
@@ -60,19 +88,8 @@ export default function WarehouseIndex() {
         dispatch({type: 'OPEN_CATEGORY_LIST_MODAL'});
     }
 
-    const { data: warehouse } = useQuery<any>(
-        ["warehouse", displayCategoryRows, maxRows],
-        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "POST", {
-            "maxRows": maxRows
-        })(),
-        {
-            enabled: displayCategoryRows > 0 && maxRows > 0,
-            refetchInterval: 1500
-        }
-    );
-
     const renderRow = ({index, style}: ListChildComponentProps) => {
-        const row = warehouse ? warehouse[index] : null;
+        const row = warehouse?.warehouses ? warehouse?.warehouses[index] : null;
         //even and odd colors
         let style3 = {...style2};
         if (index % 2 === 0) {
@@ -110,24 +127,23 @@ export default function WarehouseIndex() {
                     </Grid>
                     <Grid item>
                         <Stack direction={"row"} spacing={1} alignItems={"center"}>
-                        <Button><ArrowBackIosNewIcon /></Button>
+                        <Button onClick={() => {changePage(-1)}}><ArrowBackIosNewIcon /></Button>
                             <Select
                                 value={maxRows}
                                 onChange={handleChangeMaxRows}
                                 renderValue={(selected) => {
-                                    if (selected === 10) {
-                                        return "1-10";
-                                    }
-                                    return selected;
+                                    //return "1-10";
+                                    return `${(page - 1) * maxRows + 1}-${page * maxRows}`;
                                 }}
                             >
-                                {[5, 10, 20, 50, 100].map((option) => (
+                                {[1, 2, 5, 10, 15, 20, 30, 40, 50, 100, 200, 500, 1000].map((option) => (
                                     <MenuItem key={option} value={option}>
                                         {option}
                                     </MenuItem>
                                 ))}
                             </Select>
-                        <Button><ArrowForwardIosIcon /></Button>
+                            <Typography>z {warehouse?.totalRows} (Strona: {page} z {Math.ceil(warehouse?.totalRows / maxRows)})</Typography>
+                        <Button onClick={() => {changePage(1)}}><ArrowForwardIosIcon /></Button>
                         </Stack>
                     </Grid>
                 </Grid>
@@ -161,7 +177,7 @@ export default function WarehouseIndex() {
                     height={500}
                     itemSize={50}
                     alignItems={"center"}
-                    itemCount={warehouse?.length ?? 0}
+                    itemCount={warehouse?.warehouses?.length ?? 0}
                 >
                     {renderRow}
                 </FixedSizeList>
