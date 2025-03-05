@@ -5,38 +5,95 @@ const CategoryCustomField = require("../models/CategoryCustomField");
 const {Op} = require("sequelize");
 const WarehouseProperties = require("../models/WarehouseProperties");
 
+const baseProperties = [
+    { id: 'name', name: 'name', type: 'text', label: 'Nazwa' },
+    { id: 'quantity', name: 'quantity', type: 'number', label: 'Ilość' },
+    { id: "barcode", name: "barcode", type: "text", label: "Kod kreskowy" },
+];
+
 const getWarehouseDataByCategoryId = async (req, res) => {
     try {
+        const categoryId = req?.params?.categoryId;
+
+        const customFields = await CategoryCustomField.findAll({
+            where: {
+                CategoryID: categoryId,
+            }
+        });
+
+        // Get numeric columns
+        const numericColumns = [
+            ...baseProperties.filter((baseProperty) => baseProperty?.type === "number").map((columnData) => columnData?.name),
+            ...customFields.filter((customField) => customField?.type === "number").map((customField) => customField?.name)
+        ];
+        console.log(`For category id ${categoryId}, number columns detected: ${numericColumns}`);
+
+        // Get checkbox columns
+        const checkboxColumns = [
+            ...baseProperties.filter((baseProperty) => baseProperty?.type === "checkbox").map((columnData) => columnData?.name),
+            ...customFields.filter((customField) => customField?.type === "checkbox").map((customField) => customField?.name)
+        ];
+        console.log(`For category id ${categoryId}, checkbox columns detected: ${checkboxColumns}`);
+
         const totalRows = await Warehouse.count({
             where: { categoryId: req.params.categoryId }
         });
         const page = req?.body?.page ?? 1;
         const maxRows = req?.body?.maxRows ?? 10;
+        const search = req?.body?.search ?? [];
+
+        const where = {
+            categoryId
+        };
+
+        // Handle base properties filtering
+        Object.entries(search)
+            .filter(([key, value]) => baseProperties.map((property) => property?.name).includes(key) && value !== "")
+            .forEach(([key, value]) => {
+                where[key] = numericColumns?.includes(key) ? value : { [Op.like]: `%${value}%` };
+            });
+
+        // Handle custom properties filtering
+        const customFieldFilters = Object.entries(search)
+            .filter(([key, value]) => !baseProperties.map(property => property?.name).includes(key) && value !== "");
+
+        if (customFieldFilters.length > 0) {
+            where['$properties.customField.CustomFieldName$'] = {
+                [Op.in]: customFieldFilters.map(([key]) => key)
+            };
+            where['$properties.PropertyValue$'] = {
+                [Op.or]: customFieldFilters.map(([key, value]) =>
+                    numericColumns.includes(key)
+                        ? value
+                        : { [Op.like]: `%${value}%` }
+                )
+            };
+        }
 
         const warehouses = await Warehouse.findAll({
-            where: { categoryId: req.params.categoryId },
+            where,
             include: [
                 {
                     model: WarehouseProperties,
                     as: 'properties',
-                    required: false,
-                    foreignKey: 'WarehouseID',
+                    required: customFieldFilters.length > 0,
                     include: [
                         {
                             model: CategoryCustomField,
-                            required: true,
+                            required: customFieldFilters.length > 0,
                             as: 'customField',
-                            foreignKey: 'CustomFieldID'
                         }
                     ]
                 }
             ],
             limit: maxRows,
-            offset: (page - 1) * maxRows
+            offset: (page - 1) * maxRows,
+            subQuery: false
         });
-        console.log(JSON.stringify(warehouses, null, 2)); // Log the raw results
+
         res.json({ totalRows, warehouses });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: error.message });
     }
 };

@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import {Button, TextField, Popover, Checkbox} from "@mui/material";
+import {Button, TextField, Popover, Checkbox, InputAdornment} from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
+import ClearIcon from '@mui/icons-material/Clear';
 
-const FloatingSearchButton = ({ type = "tex" }) => {
+const FloatingSearchButton = ({ type = "tex", onChange, value }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleClick = (event) => {
@@ -17,7 +20,7 @@ const FloatingSearchButton = ({ type = "tex" }) => {
 
     return (
         <div>
-            <Button onClick={handleClick}>
+            <Button onClick={handleClick} sx={{color: value !== undefined && String(value) !== "" ? "green" : undefined}}>
                 <FilterAltIcon />
             </Button>
 
@@ -41,6 +44,19 @@ const FloatingSearchButton = ({ type = "tex" }) => {
                         variant="outlined"
                         placeholder="Enter search..."
                         style={{ margin: 10 }}
+                        InputProps={{
+                            endAdornment: (
+                                value && (
+                                    <InputAdornment position="end">
+                                        <IconButton onClick={() => onChange({ target: { value: "" } })}>
+                                            <ClearIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                )
+                            ),
+                        }}
+                        onChange={onChange}
+                        value={value}
                     />
                 )}
 
@@ -52,14 +68,22 @@ const FloatingSearchButton = ({ type = "tex" }) => {
                         placeholder="Enter search..."
                         style={{ margin: 10 }}
                         type={"number"}
+                        onChange={onChange}
+                        value={value}
+
                     />
                 )}
 
                 { type === "checkbox" && (
+                    <Box sx={{ p: 1 }}>
                     <Checkbox
                         color="primary"
                         style={{ margin: 10 }}
+                        onChange={onChange}
+                        checked={Boolean(value)}
                     />
+                        <Button onClick={() => onChange({ target: { value: "" } })}>Unselect</Button>
+                    </Box>
                 )}
 
             </Popover>

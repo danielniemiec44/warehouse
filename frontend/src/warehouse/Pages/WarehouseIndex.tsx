@@ -45,12 +45,14 @@ export default function WarehouseIndex() {
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
     const [maxRows, setMaxRows] = React.useState(2);
     const [page, setPage] = React.useState(1);
+    const [filter, setFilter] = React.useState([]);
 
     const { data: warehouse } = useQuery<any>(
-        ["warehouse", displayCategoryRows, maxRows, page],
+        ["warehouse", displayCategoryRows, maxRows, page, filter],
         () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "POST", {
             "maxRows": maxRows,
-            "page": page
+            "page": page,
+            search: filter
         })(),
         {
             enabled: displayCategoryRows > 0 && maxRows > 0,
@@ -88,6 +90,19 @@ export default function WarehouseIndex() {
     const handleOpenCategoryList = () => {
         dispatch({type: 'OPEN_CATEGORY_LIST_MODAL'});
     }
+
+    const changeFilter = (e, name) => {
+        console.log(`${name}: `, e?.target?.value, e?.target?.checked);
+        let newValue = e?.target?.value;
+        if(headers.find((headerFind) => headerFind.name === name)?.type === "checkbox") {
+            newValue = e?.target?.checked;
+        }
+        setFilter({...filter, [name]: newValue});
+    }
+
+    useEffect(() => {
+        console.log("Filter changed to: ", filter);
+    }, [filter]);
 
     const renderRow = ({index, style}: ListChildComponentProps) => {
         const row = warehouse?.warehouses ? warehouse?.warehouses[index] : null;
@@ -165,7 +180,7 @@ export default function WarehouseIndex() {
                             <TableCell key={index} style={style2}>
                                 <Stack direction={"row"} spacing={1} justifyContent={"center"} alignItems={"center"}>
                                     <Typography>{header}</Typography>
-                                    <FloatingSearchButton type={headerMap?.type} />
+                                    <FloatingSearchButton type={headerMap?.type} onChange={(e) => { changeFilter(e, headerMap?.name) }} value={filter?.[headerMap?.name]} />
                             </Stack>
                             </TableCell>
                         )})}
