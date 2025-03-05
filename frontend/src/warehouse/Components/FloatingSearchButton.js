@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextField, Popover } from "@mui/material";
+import {Button, TextField, Popover, Checkbox} from "@mui/material";
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
 
 const FloatingSearchButton = ({ type = "tex" }) => {
@@ -40,6 +40,24 @@ const FloatingSearchButton = ({ type = "tex" }) => {
                         size="small"
                         variant="outlined"
                         placeholder="Enter search..."
+                        style={{ margin: 10 }}
+                    />
+                )}
+
+                { type === "number" && (
+                    <TextField
+                        autoFocus
+                        size="small"
+                        variant="outlined"
+                        placeholder="Enter search..."
+                        style={{ margin: 10 }}
+                        type={"number"}
+                    />
+                )}
+
+                { type === "checkbox" && (
+                    <Checkbox
+                        color="primary"
                         style={{ margin: 10 }}
                     />
                 )}
