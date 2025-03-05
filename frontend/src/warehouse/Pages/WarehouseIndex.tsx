@@ -24,6 +24,7 @@ import Grid from "@mui/material/Grid";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import TextField from "@mui/material/TextField";
+import FloatingSearchButton from "../Components/FloatingSearchButton";
 
 
 export default function WarehouseIndex() {
@@ -36,8 +37,8 @@ export default function WarehouseIndex() {
     const { t } = useTranslation();
     // Update the useMemo hook to correctly access the customFields array
     const headers = useMemo(() => {
-        const baseHeaders = baseProperties.map(property => property.name);
-        const customFields = categories?.find(category => category?.id === displayCategoryRows)?.customFields?.map(field => field.name) || [];
+        const baseHeaders = baseProperties;
+        const customFields = categories?.find(category => category?.id === displayCategoryRows)?.customFields || [];
         return [...baseHeaders, ...customFields];
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
@@ -98,7 +99,8 @@ export default function WarehouseIndex() {
 
         return (
             <TableRow style={{ ...style, display: 'flex', alignItems: 'center' }} key={index}>
-                {headers?.map((header, index) => {
+                {headers?.map((headerMap, index) => {
+                    const header = headerMap?.name;
                     if(baseProperties.map(property => property.name).includes(header)) {
                         return (
                             <TableCell key={index} style={style3}>{row[header]}</TableCell>
@@ -156,16 +158,17 @@ export default function WarehouseIndex() {
                 <Box>
                 <TableHead>
                     <TableRow style={style2}>
-                        {headers.map((header, index) => (
+                        {headers.map((headerMap, index) => {
+                            const header = headerMap?.name;
+
+                            return (
                             <TableCell key={index} style={style2}>
                                 <Stack direction={"row"} spacing={1} justifyContent={"center"} alignItems={"center"}>
                                     <Typography>{header}</Typography>
-                                    <Button>
-                                        <FilterAltIcon />
-                                    </Button>
+                                    <FloatingSearchButton type={headerMap?.type} />
                             </Stack>
                             </TableCell>
-                        ))}
+                        )})}
                         <TableCell>
                             <Tooltip title={"Dodaj produkt"} arrow>
                                 <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
