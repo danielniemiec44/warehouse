@@ -15,7 +15,7 @@ import {RootReducerTypes} from "../Reducers";
 import CategoryEditor from "../Dialogs/CategoryEditor";
 import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import {useTranslation} from "react-i18next";
-import {Box, MenuItem, Select} from "@mui/material";
+import {Box, Checkbox, MenuItem, Select} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {baseProperties} from "../constants";
@@ -46,6 +46,16 @@ export default function WarehouseIndex() {
     const [page, setPage] = React.useState(1);
     const [filter, setFilter] = React.useState([]);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
+    const [selectedRows, setSelectedRows] = React.useState([]);
+
+    const selectRow = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
+        setSelectedRows(prev => {
+            if (e.target.checked) {
+                return [...prev, id];
+            }
+            return prev.filter(rowId => rowId !== id);
+        });
+    };
 
     const { data: warehouse } = useQuery<any>(
         ["warehouse", displayCategoryRows, maxRows, page, filter],
@@ -114,6 +124,12 @@ export default function WarehouseIndex() {
 
         return (
             <TableRow style={{ ...style, display: 'flex', alignItems: 'center' }} key={index}>
+                <TableCell key={index} style={style3}>
+                    <Checkbox
+                        checked={selectedRows?.includes(row?.id)}
+                        onChange={(e) => selectRow(e, row?.id)}
+                    />
+                </TableCell>
                 {headers?.map((headerMap, index) => {
                     const header = headerMap?.name;
                     if(baseProperties.map(property => property.name).includes(header)) {
@@ -176,6 +192,13 @@ export default function WarehouseIndex() {
                 <Box>
                 <TableHead>
                     <TableRow style={style2}>
+                        <TableCell key={"select-header"} style={style2}>
+                            <Typography>Selected: {selectedRows?.length}</Typography>
+                            <Button onClick={() => { setSelectedRows([]) }}>Unselect All</Button>
+                            <Button onClick={() => { setSelectedRows(warehouse?.warehouses?.map(row => row?.id)) }}>
+                                Select All Visible
+                            </Button>
+                        </TableCell>
                         {headers.map((headerMap, index) => {
                             const header = headerMap?.name;
 
