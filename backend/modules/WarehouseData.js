@@ -16,86 +16,92 @@ const getWarehouseDataByCategoryId = async (req, res) => {
         const categoryId = req?.params?.categoryId;
 
         const customFields = await CategoryCustomField.findAll({
-            where: {
-                CategoryID: categoryId,
-            }
+            where: { CategoryID: categoryId }
         });
 
         const textColumns = [
-            ...baseProperties.filter((baseProperty) => baseProperty?.type === "text").map((columnData) => columnData?.name),
-            ...customFields.filter((customField) => customField?.type === "text").map((customField) => customField?.name)
+            ...baseProperties.filter(prop => prop?.type === "text").map(prop => prop.name),
+            ...customFields.filter(field => field?.type === "text").map(field => field.name)
         ];
-        console.log(`For category id ${categoryId}, text columns detected: ${textColumns}`);
 
-        // Get numeric columns
         const numericColumns = [
-            ...baseProperties.filter((baseProperty) => baseProperty?.type === "number").map((columnData) => columnData?.name),
-            ...customFields.filter((customField) => customField?.type === "number").map((customField) => customField?.name)
+            ...baseProperties.filter(prop => prop?.type === "number").map(prop => prop.name),
+            ...customFields.filter(field => field?.type === "number").map(field => field.name)
         ];
-        console.log(`For category id ${categoryId}, number columns detected: ${numericColumns}`);
 
-        // Get checkbox columns
         const checkboxColumns = [
-            ...baseProperties.filter((baseProperty) => baseProperty?.type === "checkbox").map((columnData) => columnData?.name),
-            ...customFields.filter((customField) => customField?.type === "checkbox").map((customField) => customField?.name)
+            ...baseProperties.filter(prop => prop?.type === "checkbox").map(prop => prop.name),
+            ...customFields.filter(field => field?.type === "checkbox").map(field => field.name)
         ];
-        console.log(`For category id ${categoryId}, checkbox columns detected: ${   checkboxColumns}`);
 
         const page = req?.body?.page ?? 1;
         const maxRows = req?.body?.maxRows ?? 10;
         const search = req?.body?.search ?? [];
 
-        const where = {
-            categoryId
-        };
+        const baseWhere = { categoryId };
 
-        // Handle base properties filtering
+        // Base properties filtering with fixed checkbox handling
         Object.entries(search)
-            .filter(([key, value]) => baseProperties.map((property) => property?.name).includes(key) && value !== "")
+            .filter(([key, value]) => baseProperties.map(prop => prop.name).includes(key) && value !== "")
             .forEach(([key, value]) => {
-                where[key] = numericColumns?.includes(key) ? value : { [Op.like]: `%${value}%` };
+                if (checkboxColumns.includes(key)) {
+                    baseWhere[key] = String(value).toLowerCase() === "true";
+                } else {
+                    baseWhere[key] = numericColumns.includes(key) ? value : { [Op.like]: `%${value}%` };
+                }
             });
 
-        // Handle custom properties filtering
+        // Custom field filters
         const customFieldFilters = Object.entries(search)
-            .filter(([key, value]) => !baseProperties.map(property => property?.name).includes(key) && value !== "");
+            .filter(([key, value]) => !baseProperties.map(prop => prop.name).includes(key) && value !== "");
 
-        if (customFieldFilters.length > 0) {
-            where['$properties.customField.CustomFieldName$'] = {
-                [Op.in]: customFieldFilters.map(([key]) => key)
-            };
-            where['$properties.PropertyValue$'] = {
-                [Op.or]: customFieldFilters.map(([key, value]) =>
-                    numericColumns.includes(key)
-                        ? value
-                        : { [Op.like]: `%${value}%` }
-                )
-            };
-        }
-
-        const options = {
-            where,
-            include: [
-                {
-                    model: WarehouseProperties,
-                    as: 'properties',
-                    required: customFieldFilters.length > 0,
-                    include: [
-                        {
-                            model: CategoryCustomField,
-                            required: customFieldFilters.length > 0,
-                            as: 'customField',
-                        }
-                    ]
-                }
-            ],
+        let queryOptions = {
+            where: baseWhere,
             limit: maxRows,
             offset: (page - 1) * maxRows,
-            distinct: true
+            distinct: true,
+            include: [{
+                model: WarehouseProperties,
+                as: 'properties',
+                required: false,
+                include: [{
+                    model: CategoryCustomField,
+                    as: 'customField',
+                    required: false
+                }]
+            }]
+        };
+
+        if (customFieldFilters.length > 0) {
+            const subQuery = await WarehouseProperties.findAll({
+                attributes: ['WarehouseID'],
+                include: [{
+                    model: CategoryCustomField,
+                    as: 'customField',
+                    where: {
+                        name: { [Op.in]: customFieldFilters.map(([key]) => key) }
+                    },
+                    required: true
+                }],
+                where: {
+                    PropertyValue: {
+                        [Op.or]: customFieldFilters.map(([key, value]) =>
+                            checkboxColumns.includes(key)
+                                ? String(value).toLowerCase()
+                                : numericColumns.includes(key)
+                                    ? value
+                                    : { [Op.like]: `%${value}%` }
+                        )
+                    }
+                }
+            });
+
+            const warehouseIds = [...new Set(subQuery.map(wp => wp.WarehouseID))];
+            queryOptions.where.id = { [Op.in]: warehouseIds };
         }
 
-        const totalRows = await Warehouse.count(options);
-        const warehouses = await Warehouse.findAll(options);
+        const totalRows = await Warehouse.count(queryOptions);
+        const warehouses = await Warehouse.findAll(queryOptions);
 
         res.json({ totalRows, warehouses });
     } catch (error) {
