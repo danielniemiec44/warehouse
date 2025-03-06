@@ -15,7 +15,7 @@ import {RootReducerTypes} from "../Reducers";
 import CategoryEditor from "../Dialogs/CategoryEditor";
 import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import {useTranslation} from "react-i18next";
-import {Box, Checkbox, MenuItem, Select} from "@mui/material";
+import {Box, Checkbox, MenuItem, Select, TableBody} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {baseProperties} from "../constants";
@@ -25,6 +25,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FloatingSearchButton from "../Components/FloatingSearchButton";
 import ProductDetails from "../Dialogs/ProductDetails";
 import ExtendableMenuButton from "../Components/ExtendableMenuButton";
+import AutoSizer from 'react-virtualized-auto-sizer';
 
 
 export default function WarehouseIndex() {
@@ -42,13 +43,19 @@ export default function WarehouseIndex() {
         return [...baseHeaders, ...customFields];
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
-    const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
     const [maxRows, setMaxRows] = React.useState(5);
     const [page, setPage] = React.useState(1);
     const [filter, setFilter] = React.useState([]);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
     const [selectedRows, setSelectedRows] = React.useState([]);
 
+    const headerHeight = 50;
+    const columnWidth = 300; // Fixed width for all columns
+    const getTableWidth = useMemo(() => {
+        // Total columns = headers + checkbox + actions
+        const totalColumns = (headers?.length ?? 0) + 2;
+        return columnWidth * totalColumns;
+    }, [headers?.length]);
 
     const selectRow = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
         setSelectedRows(prev => {
@@ -67,7 +74,6 @@ export default function WarehouseIndex() {
             search: filter
         })(),
         {
-            enabled: displayCategoryRows > 0 && maxRows > 0,
             refetchInterval: 1500
         }
     );
@@ -106,7 +112,7 @@ export default function WarehouseIndex() {
     const changeFilter = (e, name) => {
         console.log(`${name}: `, e?.target?.value, e?.target?.checked);
         let newValue = e?.target?.value;
-        if(headers.find((headerFind) => headerFind.name === name)?.type === "checkbox") {
+        if(headers.find((headerFind) => headerFind?.name === name)?.type === "checkbox") {
             newValue = e?.target?.checked;
         }
         setFilter({...filter, [name]: newValue});
@@ -118,40 +124,48 @@ export default function WarehouseIndex() {
 
     const renderRow = ({index, style}: ListChildComponentProps) => {
         const row = warehouse?.warehouses ? warehouse?.warehouses[index] : null;
-        //even and odd colors
-        let style3 = {...style2};
-        if (index % 2 === 0) {
-            style3 = {...style3, backgroundColor: "#f2f2f2"};
-        }
 
-        return (
-            <TableRow style={{ ...style, display: 'flex', alignItems: 'center' }} key={index}>
-                <TableCell key={index} style={style3}>
-                    <Checkbox
-                        checked={selectedRows?.includes(row?.id)}
-                        onChange={(e) => selectRow(e, row?.id)}
-                    />
-                </TableCell>
-                {headers?.map((headerMap, index) => {
-                    const header = headerMap?.name;
-                    if(baseProperties.map(property => property.name).includes(header)) {
+        if(row) {
+            /*
+            //even and odd colors
+            let style3 = {...style2};
+            if (index % 2 === 0) {
+                style3 = {backgroundColor: "#f2f2f2"};
+            }
+
+             */
+
+            return (
+                <TableRow style={{ ...style, display: 'flex', textAlign: 'center' }} key={index}>
+                    <TableCell key={index} style={{ width: columnWidth, minWidth: columnWidth, textAlign: 'center' }}>
+                        <Checkbox
+                            checked={selectedRows?.includes(row?.id)}
+                            onChange={(e) => selectRow(e, row?.id)}
+                        />
+                    </TableCell>
+                    {headers?.map((headerMap, index) => {
+                        const header = headerMap?.name;
+                        if (baseProperties?.map(property => property?.name).includes(header)) {
+                            return (
+                                <TableCell key={index} style={{ width: columnWidth, minWidth: columnWidth, textAlign: 'center' }}>{row[header]}</TableCell>
+                            )
+                        }
                         return (
-                            <TableCell key={index} style={style3}>{row[header]}</TableCell>
-                        )
-                    }
-                    return (
-                        <TableCell key={index} style={style3}>{row?.properties?.find((property) => property?.customField?.name === header)?.PropertyValue}</TableCell>
+                            <TableCell key={index} style={{ width: columnWidth, minWidth: columnWidth, textAlign: 'center' }}>{row?.properties?.find((property) => property?.customField?.name === header)?.PropertyValue}</TableCell>
                         )
 
-                })}
-                <TableCell>
-                    {/*
+                    })}
+                    <TableCell>
+                        {/*
                     <Button disabled variant={"contained"} size={"small"} color={"primary"} onClick={() => handleEditEntry(row.id)}>Edytuj (dostępne wkrótce)</Button>
                     */}
-                    <Button onClick={() => { dispatch({ type: "OPEN_PRODUCT_DETAILS_MODAL", payload: row?.id }) }}>Szczegóły</Button>
-                </TableCell>
-            </TableRow>
-        );
+                        <Button onClick={() => {
+                            dispatch({type: "OPEN_PRODUCT_DETAILS_MODAL", payload: row?.id})
+                        }}>Szczegóły</Button>
+                    </TableCell>
+                </TableRow>
+            );
+        }
     };
 
 
@@ -198,43 +212,49 @@ export default function WarehouseIndex() {
             </Stack>
             </div>
             {displayCategoryRows < 0 ? t("infoMessages.select_category_first") : (
-                <Box>
-                <TableHead>
-                    <TableRow style={style2}>
-                        <TableCell key={"select-header"} style={style2}>
+                <div style={{ height: 'calc(100vh - 200px)' }}> {/* Adjust 200px based on your header/nav heights */}
+                    <TableHead>
+                    <TableRow>
+                        <TableCell key={"select-header"} style={{ width: columnWidth, minWidth: columnWidth, textAlign: "center" }}>
                             <Typography>Selected: {selectedRows?.length}</Typography>
                             <Button onClick={() => { setSelectedRows([]) }}>Unselect All</Button>
                             <Button onClick={() => { setSelectedRows(warehouse?.warehouses?.map(row => row?.id)) }}>
                                 Select All Visible
                             </Button>
                         </TableCell>
-                        {headers.map((headerMap, index) => {
+                        {headers?.map((headerMap, index) => {
                             const header = headerMap?.name;
 
                             return (
-                            <TableCell key={index} style={style2}>
+                            <TableCell key={index} style={{ width: columnWidth, minWidth: columnWidth }}>
                                 <Stack direction={"row"} spacing={1} justifyContent={"center"} alignItems={"center"}>
                                     <Typography>{header}</Typography>
                                     <FloatingSearchButton type={headerMap?.type} onChange={(e) => { changeFilter(e, headerMap?.name) }} value={filter?.[headerMap?.name]} />
                             </Stack>
                             </TableCell>
                         )})}
-                        <TableCell>
+                        <TableCell style={{ width: columnWidth, minWidth: columnWidth }}>
                             <Tooltip title={"Dodaj produkt"} arrow>
                                 <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
                             </Tooltip>
                 </TableCell>
                     </TableRow>
                 </TableHead>
-                <FixedSizeList
-                    height={500}
-                    itemSize={50}
-                    alignItems={"center"}
-                    itemCount={warehouse?.warehouses?.length ?? 0}
-                >
-                    {renderRow}
-                </FixedSizeList>
-                </Box>
+                    <div style={{ height: `calc(100% - ${headerHeight}px)` }}>
+                    <AutoSizer>
+                        {({ height, width }) => (
+                            <FixedSizeList
+                                height={height}
+                                width={getTableWidth}
+                                itemCount={warehouse?.warehouses?.length ?? 0}
+                                itemSize={50}
+                            >
+                                {renderRow}
+                            </FixedSizeList>
+                        )}
+                    </AutoSizer>
+                    </div>
+                </div>
             )}
 
             { editEntryId >= 0 && <EditEntryModal /> }

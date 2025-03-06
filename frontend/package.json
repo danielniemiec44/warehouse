@@ -10,6 +10,7 @@
     "@mui/styles": "^6.4.0",
     "@mui/x-charts": "^7.27.1",
     "@reduxjs/toolkit": "^2.5.0",
+    "autosizer": "^2.1.0",
     "cra-template": "1.2.0",
     "http-proxy-middleware": "^3.0.3",
     "i18next": "^23.16.8",
@@ -24,6 +25,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
     "react-scripts": "5.0.1",
+    "react-virtualized-auto-sizer": "^1.0.25",
     "react-window": "^1.8.11",
     "redux": "^5.0.1",
     "web-vitals": "^4.2.4"
