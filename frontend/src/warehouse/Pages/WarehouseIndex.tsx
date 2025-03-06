@@ -199,8 +199,10 @@ export default function WarehouseIndex() {
                         </Stack>
                     </Grid>
                 </Grid>
-            <Stack direction={"row"} spacing={5}>
+            <Grid container spacing={5}>
                 {/*<Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>*/}
+                <Grid item lg={6} xs={12}></Grid>
+                <Grid item lg={3} xs={12}>
                 <ExtendableMenuButton
                     title={"Zaznaczenie"}
                     disabled={selectedRows.length === 0}
@@ -208,11 +210,14 @@ export default function WarehouseIndex() {
                     label: "Sprzedaj z magazynu",
                     onClick: () => { console.log("Opening sell modal..."); dispatch({ type: "OPEN_SELL_FROM_WAREHOUSE_MODAL", payload: selectedRows }) }
                 }]} />
+                </Grid>
+                <Grid item lg={3} xs={12}>
                 <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
-            </Stack>
+                </Grid>
+            </Grid>
             </div>
             {displayCategoryRows < 0 ? t("infoMessages.select_category_first") : (
-                <div style={{ height: 'calc(100vh - 200px)' }}> {/* Adjust 200px based on your header/nav heights */}
+                <div style={{ height: 'calc(100vh - 200px)', width: "100vw", overflow: "auto" }}> {/* Adjust 200px based on your header/nav heights */}
                     <TableHead>
                     <TableRow>
                         <TableCell key={"select-header"} style={{ width: columnWidth, minWidth: columnWidth, textAlign: "center" }}>
