@@ -26,6 +26,22 @@ import FloatingSearchButton from "../Components/FloatingSearchButton";
 import ProductDetails from "../Dialogs/ProductDetails";
 import ExtendableMenuButton from "../Components/ExtendableMenuButton";
 import AutoSizer from 'react-virtualized-auto-sizer';
+import SellModal from "../Dialogs/SellModal";
+import {CategoryTypes} from "../Types/CategoryTypes";
+
+export const useWarehouse = (displayCategoryRows, maxRows, page, filter) => {
+    return useQuery<any>(
+        ["warehouse", displayCategoryRows, maxRows, page, filter],
+        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows !== undefined ? displayCategoryRows : ''}`, "POST", {
+        "maxRows": maxRows,
+            "page": page,
+            search: filter
+        })(),
+        {
+            refetchInterval: 1500
+        }
+    );
+};
 
 
 export default function WarehouseIndex() {
@@ -48,6 +64,7 @@ export default function WarehouseIndex() {
     const [filter, setFilter] = React.useState([]);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
     const [selectedRows, setSelectedRows] = React.useState([]);
+    const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
 
     const headerHeight = 50;
     const columnWidth = 300; // Fixed width for all columns
@@ -66,17 +83,7 @@ export default function WarehouseIndex() {
         });
     };
 
-    const { data: warehouse } = useQuery<any>(
-        ["warehouse", displayCategoryRows, maxRows, page, filter],
-        () => CustomFetchForUseQuery(`warehouse/${displayCategoryRows}`, "POST", {
-            "maxRows": maxRows,
-            "page": page,
-            search: filter
-        })(),
-        {
-            refetchInterval: 1500
-        }
-    );
+    const { data: warehouse } = useWarehouse(displayCategoryRows, maxRows, page, filter);
 
     // changing page basing on direction (1 or -1)
     const changePage = (direction) => {
@@ -208,7 +215,7 @@ export default function WarehouseIndex() {
                     disabled={selectedRows.length === 0}
                     items={[{
                     label: "Sprzedaj z magazynu",
-                    onClick: () => { console.log("Opening sell modal..."); dispatch({ type: "OPEN_SELL_FROM_WAREHOUSE_MODAL", payload: selectedRows }) }
+                    onClick: () => { console.log("Opening sell modal..."); dispatch({ type: "OPEN_COMPLETING_SALE_MODAL", payload: selectedRows }) }
                 }]} />
                 </Grid>
                 <Grid item lg={3} xs={12}>
@@ -270,6 +277,11 @@ export default function WarehouseIndex() {
             {productDetailsId >= 0 && (
                 <ProductDetails />
             )}
+
+            {saleItems !== null && (
+                <SellModal />
+            )}
+
 
 
         </div>

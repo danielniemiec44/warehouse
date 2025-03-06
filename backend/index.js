@@ -181,6 +181,10 @@ app.post('/warehouse/:categoryId', async (req, res) => {
   await getWarehouseDataByCategoryId(req, res);
 });
 
+app.post('/warehouse', async (req, res) => {
+  await getWarehouseDataByCategoryId(req, res);
+});
+
 app.put('/warehouse/:categoryId/:productId', async (req, res) => {
   await setWarehouseData(req, res);
 });

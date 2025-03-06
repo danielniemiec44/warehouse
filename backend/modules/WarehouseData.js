@@ -16,7 +16,7 @@ const getWarehouseDataByCategoryId = async (req, res) => {
         const categoryId = req?.params?.categoryId;
 
         const customFields = await CategoryCustomField.findAll({
-            where: { CategoryID: categoryId }
+            where: categoryId ? { CategoryID: categoryId } : {}
         });
 
         const textColumns = [
@@ -38,7 +38,10 @@ const getWarehouseDataByCategoryId = async (req, res) => {
         const maxRows = req?.body?.maxRows ?? 10;
         const search = req?.body?.search ?? [];
 
-        const baseWhere = { categoryId };
+        const baseWhere = {};
+        if (categoryId) {
+            baseWhere.categoryId = categoryId;
+        }
 
         // Base properties filtering with fixed checkbox handling
         Object.entries(search)
@@ -109,6 +112,9 @@ const getWarehouseDataByCategoryId = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+
 
 const getCategories = (req, res) => {
     handleDatabaseQuery(() => Category.findAll({

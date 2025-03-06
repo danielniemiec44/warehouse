@@ -15,14 +15,6 @@ const SalesItems = sequelize.define('SalesItems', {
             key: 'id'
         }
     },
-    warehouseId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Warehouse',
-            key: 'id'
-        }
-    },
     quantity: {
         type: DataTypes.INTEGER,
         allowNull: false

@@ -20,14 +20,6 @@ const Sales = sequelize.define('Sales', {
             key: 'id'
         }
     },
-    warehouseId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: 'Warehouse',
-            key: 'id'
-        }
-    },
     totalAmount: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
