@@ -15,16 +15,15 @@ import {RootReducerTypes} from "../Reducers";
 import CategoryEditor from "../Dialogs/CategoryEditor";
 import {FixedSizeList, ListChildComponentProps} from 'react-window';
 import {useTranslation} from "react-i18next";
-import {Autocomplete, Box, FormControl, InputLabel, MenuItem, Select} from "@mui/material";
+import {Box, MenuItem, Select} from "@mui/material";
 import Tooltip from "@mui/material/Tooltip";
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import {baseProperties} from "../constants";
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Grid from "@mui/material/Grid";
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import TextField from "@mui/material/TextField";
 import FloatingSearchButton from "../Components/FloatingSearchButton";
+import ProductDetails from "../Dialogs/ProductDetails";
 
 
 export default function WarehouseIndex() {
@@ -46,6 +45,7 @@ export default function WarehouseIndex() {
     const [maxRows, setMaxRows] = React.useState(2);
     const [page, setPage] = React.useState(1);
     const [filter, setFilter] = React.useState([]);
+    const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
 
     const { data: warehouse } = useQuery<any>(
         ["warehouse", displayCategoryRows, maxRows, page, filter],
@@ -127,7 +127,10 @@ export default function WarehouseIndex() {
 
                 })}
                 <TableCell>
+                    {/*
                     <Button disabled variant={"contained"} size={"small"} color={"primary"} onClick={() => handleEditEntry(row.id)}>Edytuj (dostępne wkrótce)</Button>
+                    */}
+                    <Button onClick={() => { dispatch({ type: "OPEN_PRODUCT_DETAILS_MODAL", payload: row?.id }) }}>Szczegóły</Button>
                 </TableCell>
             </TableRow>
         );
@@ -207,6 +210,10 @@ export default function WarehouseIndex() {
             {editCategoryId >= 0 && categories && (
                 <CategoryEditor />
             )}
+            {productDetailsId >= 0 && (
+                <ProductDetails />
+            )}
+
 
         </div>
     );

@@ -3,7 +3,8 @@ const initialState = {
     editEntryId: -1,
     showCategoryList: false,
     editCategoryId: -1,
-    displayCategoryRows: -1
+    displayCategoryRows: -1,
+    productDetailsId: -1
 };
 
 interface WarehouseReducerTypes {
@@ -12,6 +13,7 @@ interface WarehouseReducerTypes {
     showCategoryList: boolean;
     editCategoryId: number;
     displayCategoryRows: number;
+    productDetailsId: number;
 }
 
 const warehouseReducer = (state = initialState, action) => {
@@ -60,6 +62,16 @@ const warehouseReducer = (state = initialState, action) => {
             return {
                 ...state,
                 displayCategoryRows: action.payload
+            }
+        case 'OPEN_PRODUCT_DETAILS_MODAL':
+            return {
+                ...state,
+                productDetailsId: action.payload
+            }
+        case 'CLOSE_PRODUCT_DETAILS_MODAL':
+            return {
+                ...state,
+                productDetailsId: initialState.productDetailsId
             }
         default:
             return state;

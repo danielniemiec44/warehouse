@@ -11,6 +11,10 @@ const Category = require('./models/Category');
 const CategoryCustomField = require('./models/CategoryCustomField');
 const WarehouseProperties = require('./models/WarehouseProperties');
 const {getWarehouseDataByID} = require("./modules/Warehouse");
+const Sales = require('./models/Sales');
+const SalesItems = require('./models/SalesItems');
+const User = require('./models/User');
+const Documents = require('./models/Documents');
 
 
 const PORT = 4000;
@@ -71,6 +75,76 @@ WarehouseProperties.belongsTo(CategoryCustomField, {
   targetKey: 'id',  // This is crucial for correct joining
   as: 'customField'
 });
+
+
+
+// Sales belongs to User (who made the sale)
+Sales.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'saleUser' // Zmieniony alias
+});
+
+// Sales belongs to Warehouse (from which the sale was made)
+Sales.belongsTo(Warehouse, {
+  foreignKey: 'warehouseId',
+  as: 'saleWarehouse' // Zmieniony alias
+});
+
+// Sales has many SalesItems (products in the sale)
+Sales.hasMany(SalesItems, {
+  foreignKey: 'saleId',
+  as: 'saleItems' // Zmieniony alias
+});
+
+// Sales has many Documents (generated documents for the sale)
+Sales.hasMany(Documents, {
+  foreignKey: 'saleId',
+  as: 'saleDocuments' // Zmieniony alias
+});
+
+
+
+
+
+
+// SalesItems belongs to Sales (the sale transaction)
+SalesItems.belongsTo(Sales, {
+  foreignKey: 'saleId',
+  as: 'itemSale' // Zmieniony alias
+});
+
+// SalesItems belongs to Warehouse (the product from the warehouse)
+SalesItems.belongsTo(Warehouse, {
+  foreignKey: 'warehouseId',
+  as: 'itemWarehouse' // Zmieniony alias
+});
+
+
+
+
+
+// Documents belongs to Sales (the sale transaction)
+Documents.belongsTo(Sales, {
+  foreignKey: 'saleId',
+  as: 'documentSale' // Zmieniony alias
+});
+
+
+
+// User has many Sales (sales made by the user)
+User.hasMany(Sales, {
+  foreignKey: 'userId',
+  as: 'userSales' // Zmieniony alias
+});
+
+
+// Warehouse has many SalesItems (products sold from the warehouse)
+Warehouse.hasMany(SalesItems, {
+  foreignKey: 'warehouseId',
+  as: 'warehouseSalesItems' // Zmieniony alias
+});
+
+
 
 
 

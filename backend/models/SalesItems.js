@@ -1,0 +1,43 @@
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../db');
+
+const SalesItems = sequelize.define('SalesItems', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    saleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Sales',
+            key: 'id'
+        }
+    },
+    warehouseId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Warehouse',
+            key: 'id'
+        }
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    unitPrice: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+    },
+    totalPrice: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: false
+    }
+}, {
+    tableName: 'SalesItems',
+    timestamps: false
+});
+
+module.exports = SalesItems;
