@@ -21,6 +21,12 @@ const getWarehouseDataByCategoryId = async (req, res) => {
             }
         });
 
+        const textColumns = [
+            ...baseProperties.filter((baseProperty) => baseProperty?.type === "text").map((columnData) => columnData?.name),
+            ...customFields.filter((customField) => customField?.type === "text").map((customField) => customField?.name)
+        ];
+        console.log(`For category id ${categoryId}, text columns detected: ${textColumns}`);
+
         // Get numeric columns
         const numericColumns = [
             ...baseProperties.filter((baseProperty) => baseProperty?.type === "number").map((columnData) => columnData?.name),
@@ -33,11 +39,8 @@ const getWarehouseDataByCategoryId = async (req, res) => {
             ...baseProperties.filter((baseProperty) => baseProperty?.type === "checkbox").map((columnData) => columnData?.name),
             ...customFields.filter((customField) => customField?.type === "checkbox").map((customField) => customField?.name)
         ];
-        console.log(`For category id ${categoryId}, checkbox columns detected: ${checkboxColumns}`);
+        console.log(`For category id ${categoryId}, checkbox columns detected: ${   checkboxColumns}`);
 
-        const totalRows = await Warehouse.count({
-            where: { categoryId: req.params.categoryId }
-        });
         const page = req?.body?.page ?? 1;
         const maxRows = req?.body?.maxRows ?? 10;
         const search = req?.body?.search ?? [];
@@ -70,7 +73,7 @@ const getWarehouseDataByCategoryId = async (req, res) => {
             };
         }
 
-        const warehouses = await Warehouse.findAll({
+        const options = {
             where,
             include: [
                 {
@@ -88,8 +91,11 @@ const getWarehouseDataByCategoryId = async (req, res) => {
             ],
             limit: maxRows,
             offset: (page - 1) * maxRows,
-            subQuery: false
-        });
+            distinct: true
+        }
+
+        const totalRows = await Warehouse.count(options);
+        const warehouses = await Warehouse.findAll(options);
 
         res.json({ totalRows, warehouses });
     } catch (error) {

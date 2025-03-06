@@ -43,7 +43,7 @@ export default function WarehouseIndex() {
     }, [displayCategoryRows, categories]);
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const style2: CSSProperties = { width: `${100 / (headers?.length + 1)}vw`, textAlign: "center" };
-    const [maxRows, setMaxRows] = React.useState(2);
+    const [maxRows, setMaxRows] = React.useState(5);
     const [page, setPage] = React.useState(1);
     const [filter, setFilter] = React.useState([]);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
