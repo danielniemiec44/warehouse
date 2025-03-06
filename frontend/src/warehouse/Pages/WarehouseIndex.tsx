@@ -24,6 +24,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import FloatingSearchButton from "../Components/FloatingSearchButton";
 import ProductDetails from "../Dialogs/ProductDetails";
+import ExtendableMenuButton from "../Components/ExtendableMenuButton";
 
 
 export default function WarehouseIndex() {
@@ -47,6 +48,7 @@ export default function WarehouseIndex() {
     const [filter, setFilter] = React.useState([]);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
     const [selectedRows, setSelectedRows] = React.useState([]);
+
 
     const selectRow = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
         setSelectedRows(prev => {
@@ -185,7 +187,14 @@ export default function WarehouseIndex() {
                 </Grid>
             <Stack direction={"row"} spacing={5}>
                 {/*<Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>*/}
-                    <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
+                <ExtendableMenuButton
+                    title={"Zaznaczenie"}
+                    disabled={selectedRows.length === 0}
+                    items={[{
+                    label: "Sprzedaj z magazynu",
+                    onClick: () => { console.log("Opening sell modal..."); dispatch({ type: "OPEN_SELL_FROM_WAREHOUSE_MODAL", payload: selectedRows }) }
+                }]} />
+                <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
             </Stack>
             </div>
             {displayCategoryRows < 0 ? t("infoMessages.select_category_first") : (
