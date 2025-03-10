@@ -5,7 +5,8 @@ const initialState = {
     editCategoryId: -1,
     displayCategoryRows: -1,
     productDetailsId: -1,
-    saleItems: null
+    saleItems: null,
+    filter: []
 };
 
 interface WarehouseReducerTypes {
@@ -16,6 +17,7 @@ interface WarehouseReducerTypes {
     displayCategoryRows: number;
     productDetailsId: number;
     saleOrderNumber: Record<any, any> | null;
+    filter: any;
 }
 
 const warehouseReducer = (state = initialState, action) => {
@@ -84,6 +86,16 @@ const warehouseReducer = (state = initialState, action) => {
             return {
                 ...state,
                 saleItems: initialState.saleItems
+            }
+            case "FILTER_ROWS":
+                return {
+                    ...state,
+                    filter: action.payload
+                }
+        case "RESET_FILTER_ROWS":
+            return {
+                ...state,
+                filter: initialState.filter
             }
         default:
             return state;

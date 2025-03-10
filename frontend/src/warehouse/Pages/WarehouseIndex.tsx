@@ -61,7 +61,8 @@ export default function WarehouseIndex() {
     const body = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const [maxRows, setMaxRows] = React.useState(5);
     const [page, setPage] = React.useState(1);
-    const [filter, setFilter] = React.useState([]);
+    // filter is in reducer
+    const filter = useSelector((state: any) => state.warehouse.filter);
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
     const [selectedRows, setSelectedRows] = React.useState([]);
     const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
@@ -122,7 +123,7 @@ export default function WarehouseIndex() {
         if(headers.find((headerFind) => headerFind?.name === name)?.type === "checkbox") {
             newValue = e?.target?.checked;
         }
-        setFilter({...filter, [name]: newValue});
+        dispatch({type: "FILTER_ROWS", payload: {...filter, [name]: newValue}});
     }
 
     useEffect(() => {
@@ -175,6 +176,10 @@ export default function WarehouseIndex() {
         }
     };
 
+    useEffect(() => {
+        console.log("Selected rows", selectedRows);
+    }, [selectedRows]);
+
 
     return (
         <div>
@@ -219,7 +224,7 @@ export default function WarehouseIndex() {
                 }]} />
                 </Grid>
                 <Grid item lg={3} xs={12}>
-                <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}>Kategorie</Button>
+                    <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}><Typography>Wybierz kategorię produktu<br />Wybrana: <b>{categories?.find(category => category?.id === displayCategoryRows)?.name ?? "ŻADNA"}</b></Typography></Button>
                 </Grid>
             </Grid>
             </div>
@@ -230,7 +235,9 @@ export default function WarehouseIndex() {
                         <TableCell key={"select-header"} style={{ width: columnWidth, minWidth: columnWidth, textAlign: "center" }}>
                             <Typography>Selected: {selectedRows?.length}</Typography>
                             <Button onClick={() => { setSelectedRows([]) }}>Unselect All</Button>
-                            <Button onClick={() => { setSelectedRows(warehouse?.warehouses?.map(row => row?.id)) }}>
+                            <Button onClick={() => {
+                                setSelectedRows(Array.from(new Set([...selectedRows, ...warehouse?.warehouses?.map(row => row?.id) ?? []])))
+                            }}>
                                 Select All Visible
                             </Button>
                         </TableCell>
