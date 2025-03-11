@@ -6,6 +6,7 @@ const initialState = {
     displayCategoryRows: -1,
     productDetailsId: -1,
     saleItems: null,
+    showSaleCompletingModal: false,
     filter: []
 };
 
@@ -16,7 +17,6 @@ interface WarehouseReducerTypes {
     editCategoryId: number;
     displayCategoryRows: number;
     productDetailsId: number;
-    saleOrderNumber: Record<any, any> | null;
     filter: any;
 }
 
@@ -80,13 +80,15 @@ const warehouseReducer = (state = initialState, action) => {
         case 'OPEN_COMPLETING_SALE_MODAL':
             return {
                 ...state,
-                saleItems: action.payload
+                saleItems: action.payload,
+                showSaleCompletingModal: true
             }
         case 'CLOSE_COMPLETING_SALE_MODAL':
             return {
                 ...state,
-                saleItems: initialState.saleItems
+                showSaleCompletingModal: false
             }
+
             case "FILTER_ROWS":
                 return {
                     ...state,

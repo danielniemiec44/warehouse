@@ -66,6 +66,7 @@ export default function WarehouseIndex() {
     const productDetailsId = useSelector((state: RootReducerTypes) => state.warehouse.productDetailsId);
     const [selectedRows, setSelectedRows] = React.useState([]);
     const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
+    const showSaleCompletingModal = useSelector((state: RootReducerTypes) => state.warehouse.showSaleCompletingModal);
 
     const headerHeight = 50;
     const columnWidth = 300; // Fixed width for all columns
@@ -220,8 +221,17 @@ export default function WarehouseIndex() {
                     disabled={selectedRows.length === 0}
                     items={[{
                     label: "Sprzedaj z magazynu",
-                    onClick: () => { console.log("Opening sell modal..."); dispatch({ type: "OPEN_COMPLETING_SALE_MODAL", payload: selectedRows }) }
-                }]} />
+                        onClick: () => {
+                            console.log("Opening sell modal...");
+                            dispatch({
+                                type: "OPEN_COMPLETING_SALE_MODAL",
+                                payload: selectedRows?.map((selectedRow) => ({
+                                    id: selectedRow,
+                                    quantity: saleItems?.find((saleItem) => saleItem?.id === selectedRow)?.quantity || 1
+                                }))
+                            })
+                        }
+                    }]} />
                 </Grid>
                 <Grid item lg={3} xs={12}>
                     <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}><Typography>Wybierz kategorię produktu<br />Wybrana: <b>{categories?.find(category => category?.id === displayCategoryRows)?.name ?? "ŻADNA"}</b></Typography></Button>
@@ -285,7 +295,7 @@ export default function WarehouseIndex() {
                 <ProductDetails />
             )}
 
-            {saleItems !== null && (
+            {saleItems !== null && showSaleCompletingModal && (
                 <SellModal />
             )}
 
