@@ -19,17 +19,9 @@ export default function WarehouseIndex() {
         <Grid container spacing={2} sx={{display: 'flex', alignItems: 'center', alignContent: 'center', flexDirection: 'row', justifyContent: 'center'}}>
             <Grid item xs={3}>
                 <Paper variant={"outlined"} sx={{ padding: "20px", marginTop: "20px", backgroundColor: red[500], color: "white"}}>
-                    <Typography variant={"h5"} style={{}}> <ShoppingCartIcon fontSize={"small"} /> Ilość oczekujących zamówień</Typography>
+                    <Typography variant={"h5"} style={{}}> <ShoppingCartIcon fontSize={"small"} /> Ilość zamówień</Typography>
                     <Typography variant={"h4"}>0</Typography>
                     <Button color="inherit" variant="outlined" style={{marginTop: "20px"}}>Zobacz zamówienia</Button>
-
-                </Paper>
-            </Grid>
-            <Grid item xs={3}>
-                <Paper variant={"outlined"} sx={{ padding: "20px", marginTop: "20px", backgroundColor: deepPurple[500], color: "white" }}>
-                    <Typography variant={"h5"}><LocalShippingIcon fontSize={"small"}/> Ostatnia wprowadzona dostawa</Typography>
-                    <Typography variant={"h4"}>28.10.2024</Typography>
-                    <Button color="inherit" variant="outlined" style={{marginTop: "20px"}}>Dodaj dostawę</Button>
 
                 </Paper>
             </Grid>
