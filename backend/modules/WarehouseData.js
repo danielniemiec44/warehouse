@@ -35,7 +35,7 @@ const getWarehouseDataByCategoryId = async (req, res) => {
         ];
 
         const page = req?.body?.page ?? 1;
-        const maxRows = req?.body?.maxRows ?? 10;
+        const maxRows = req?.body?.maxRows ?? null;
         const search = req?.body?.search ?? [];
 
         const baseWhere = {};
