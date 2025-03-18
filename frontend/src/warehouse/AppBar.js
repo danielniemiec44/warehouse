@@ -25,9 +25,7 @@ const navigationMap = [
     { name: 'Strona główna', path: '/main' },
     { name: 'Magazyn', path: '/warehouse' },
     { name: 'Zamówienia', path: '/orders' },
-    { name: 'Eksport', path: '/exports' },
-    { name: 'Importuj dane', path: '/imports' },
-    { name: 'Ustawienia systemu', path: '/settings' },
+    { name: 'Klienci', path: '/customers' },
     { name: 'Panel', path: '/panel' },
 ];
 

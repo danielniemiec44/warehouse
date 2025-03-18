@@ -11,9 +11,17 @@ const Customer = sequelize.define('Customer', {
         type: DataTypes.ENUM('individual', 'company'),
         allowNull: false
     },
-    name: {
+    customer_name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    customer_surname: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    companyName: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
     nip: {
         type: DataTypes.STRING(10),
