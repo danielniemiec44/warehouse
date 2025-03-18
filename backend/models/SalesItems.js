@@ -5,13 +5,21 @@ const SalesItems = sequelize.define('SalesItems', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
     },
     saleId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: 'Sales',
+            key: 'id'
+        }
+    },
+    productId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: 'Warehouse',
             key: 'id'
         }
     },

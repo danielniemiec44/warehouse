@@ -15,6 +15,7 @@ const Sales = require('./models/Sales');
 const SalesItems = require('./models/SalesItems');
 const User = require('./models/User');
 const Documents = require('./models/Documents');
+const Customer = require('./models/Customer');
 
 
 const PORT = 4000;
@@ -36,8 +37,6 @@ Category.hasMany(Warehouse, {
   as: 'warehouses' // Alias for the association
 });
 
-
-
 // Associations
 CategoryCustomField.belongsTo(Category, {
   foreignKey: 'CategoryID', // Matches the field in CategoryCustomField
@@ -48,8 +47,6 @@ CategoryCustomField.hasMany(WarehouseProperties, {
   foreignKey: 'CustomFieldID', // Matches the field in WarehouseProperties
   as: 'properties' // Alias for the association
 });
-
-
 
 // Associations
 Warehouse.belongsTo(Category, {
@@ -62,8 +59,6 @@ Warehouse.hasMany(WarehouseProperties, {
   as: 'properties' // Alias for the association
 });
 
-
-
 // Associations
 WarehouseProperties.belongsTo(Warehouse, {
   foreignKey: 'WarehouseID', // Matches the field in WarehouseProperties
@@ -75,8 +70,6 @@ WarehouseProperties.belongsTo(CategoryCustomField, {
   targetKey: 'id',  // This is crucial for correct joining
   as: 'customField'
 });
-
-
 
 // Sales belongs to User (who made the sale)
 Sales.belongsTo(User, {
@@ -102,34 +95,11 @@ Sales.hasMany(Documents, {
   as: 'saleDocuments' // Zmieniony alias
 });
 
-
-
-
-
-
-// SalesItems belongs to Sales (the sale transaction)
-SalesItems.belongsTo(Sales, {
-  foreignKey: 'saleId',
-  as: 'itemSale' // Zmieniony alias
-});
-
-// SalesItems belongs to Warehouse (the product from the warehouse)
-SalesItems.belongsTo(Warehouse, {
-  foreignKey: 'warehouseId',
-  as: 'itemWarehouse' // Zmieniony alias
-});
-
-
-
-
-
 // Documents belongs to Sales (the sale transaction)
 Documents.belongsTo(Sales, {
   foreignKey: 'saleId',
   as: 'documentSale' // Zmieniony alias
 });
-
-
 
 // User has many Sales (sales made by the user)
 User.hasMany(Sales, {
@@ -137,21 +107,33 @@ User.hasMany(Sales, {
   as: 'userSales' // Zmieniony alias
 });
 
-
 // Warehouse has many SalesItems (products sold from the warehouse)
 Warehouse.hasMany(SalesItems, {
   foreignKey: 'warehouseId',
   as: 'warehouseSalesItems' // Zmieniony alias
 });
 
+SalesItems.belongsTo(Sales, {
+  foreignKey: 'saleId',
+  as: 'sale'
+});
 
+SalesItems.belongsTo(Warehouse, {
+  foreignKey: 'productId',
+  as: 'product'
+});
 
+// Customer can have many Sales
+Customer.hasMany(Sales, {
+  foreignKey: 'customerId',
+  as: 'customerSales'
+});
 
-
-
-
-
-
+// Sales belongs to a Customer
+Sales.belongsTo(Customer, {
+  foreignKey: 'customerId',
+  as: 'customer'
+});
 
 
 app.listen(PORT, async () => {
