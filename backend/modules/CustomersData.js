@@ -11,6 +11,17 @@ const getAllCustomers = async (req, res) => {
     }
 }
 
+const createNewCustomer = async (req, res) => {
+    try {
+        const customer = await Customer.create(req.body);
+        res.json(customer);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ errors: 'Could not create new customer', message: err.message });
+    }
+}
+
 module.exports = {
-    getAllCustomers
+    getAllCustomers,
+    createNewCustomer
 }

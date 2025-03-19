@@ -16,7 +16,7 @@ const SalesItems = require('./models/SalesItems');
 const User = require('./models/User');
 const Documents = require('./models/Documents');
 const Customer = require('./models/Customer');
-const {getAllCustomers} = require("./modules/CustomersData");
+const {getAllCustomers, createNewCustomer} = require("./modules/CustomersData");
 
 
 const PORT = 4000;
@@ -190,4 +190,8 @@ app.put('/category', async (req, res) => {
 
 app.get("/customers", async (req, res) => {
   await getAllCustomers(req, res);
+})
+
+app.post("/customers", async (req, res) => {
+  await createNewCustomer(req, res);
 })

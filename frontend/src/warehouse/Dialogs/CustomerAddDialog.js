@@ -8,22 +8,32 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import DialogActions from "@mui/material/DialogActions";
 import {ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {useMutation, useQueryClient} from "react-query";
+import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
+import eventEmitter from "../Utils/eventEmitter";
 
 export const CustomerAddDialog = () => {
     const open = useSelector((state) => state.modal.showAddCustomerModal);
     const dispatch = useDispatch();
     const [customerData, setCustomerData] = React.useState({
-        companyOrIndividual: 'company',
-        companyName: '',
-        nip: '',
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        address: '',
-        postalCode: '',
-        city: ''
+        type: 'company',
+        companyName: null,
+        nip: null,
+        customer_name: null,
+        customer_surname: null,
+        email: null,
+        phone: null,
+        address: null,
+        postalCode: null,
+        city: null
     });
+
+    const companySpecificFields = [
+        'companyName',
+        'nip'
+    ];
+
+    const queryClient = useQueryClient();
 
     const handleClose = () => {
         dispatch({ type: 'CLOSE_ADD_CUSTOMER_MODAL' });
@@ -32,7 +42,7 @@ export const CustomerAddDialog = () => {
     const handleChange = (event) => {
         setCustomerData({
             ...customerData,
-            [event.target.name]: event.target.value
+            [event.target.name]: event.target.value?.length > 0 ? event.target.value : null
         });
     };
 
@@ -40,17 +50,32 @@ export const CustomerAddDialog = () => {
         if (newValue !== null) {
             setCustomerData({
                 ...customerData,
-                companyOrIndividual: newValue
+                ...companySpecificFields.reduce((acc, field) => {
+                    acc[field] = null;
+                    return acc;
+                }, {}),
+                type: newValue
             });
         }
     };
 
+    const mutation = useMutation(
+        (newData) => CustomFetchForUseQuery(`customers`, "POST", newData)(),
+        {
+            onSuccess: () => {
+                queryClient.invalidateQueries(["warehouseData", customerData])
+                    .then(() => eventEmitter.emit('showSnackbar', { message: 'Klient został dodany', transition: 'slide', variant: 'success' }))
+                    .then(() => {/*queryClient.invalidateQueries("")*/})
+                    .then(handleClose);
+            },
+            onError: (error) => {
+                eventEmitter.emit('showSnackbar', { message: `${error.errors}\n\n${error.message}`, transition: 'slide', variant: 'error' });
+            }
+        }
+    );
+
     const handleSubmit = () => {
-        dispatch({
-            type: 'ADD_CUSTOMER',
-            payload: customerData
-        });
-        handleClose();
+        mutation.mutate(customerData);
     };
 
     return (
@@ -58,7 +83,7 @@ export const CustomerAddDialog = () => {
             <DialogTitle>Dodaj klienta</DialogTitle>
             <DialogContent>
                 <ToggleButtonGroup
-                    value={customerData.companyOrIndividual}
+                    value={customerData.type}
                     exclusive
                     onChange={handleToggleChange}
                     fullWidth
@@ -72,7 +97,7 @@ export const CustomerAddDialog = () => {
                     </ToggleButton>
                 </ToggleButtonGroup>
 
-                {customerData.companyOrIndividual === 'company' && (
+                {customerData.type === 'company' && (
                     <>
                         <TextField
                             autoFocus
@@ -93,6 +118,7 @@ export const CustomerAddDialog = () => {
                             value={customerData.nip}
                             onChange={handleChange}
                         />
+                        <hr style={{ marginTop: 40, marginBottom: 40 }} />
                     </>
                 )}
 
@@ -101,8 +127,8 @@ export const CustomerAddDialog = () => {
                     label="Imię"
                     type="text"
                     fullWidth
-                    name="firstName"
-                    value={customerData.firstName}
+                    name="customer_name"
+                    value={customerData.customer_name}
                     onChange={handleChange}
                 />
                 <TextField
@@ -110,8 +136,8 @@ export const CustomerAddDialog = () => {
                     label="Nazwisko"
                     type="text"
                     fullWidth
-                    name="lastName"
-                    value={customerData.lastName}
+                    name="customer_surname"
+                    value={customerData.customer_surname}
                     onChange={handleChange}
                 />
                 <TextField

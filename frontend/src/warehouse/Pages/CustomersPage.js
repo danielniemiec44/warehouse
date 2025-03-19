@@ -10,12 +10,13 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import SquareButton from "../Utils/SquareButton";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {CustomerAddDialog} from "../Dialogs/CustomerAddDialog";
 
 
 const CustomersPage = () => {
     const dispatch = useDispatch();
+    const showAddCustomerModal = useSelector((state) => state.modal.showAddCustomerModal);
 
     const renderRow = ({ index, style }) => {
         return (
@@ -28,10 +29,6 @@ const CustomersPage = () => {
                         <Box>
                             <Typography variant="subtitle1" fontWeight="bold">
                                 Nazwa firmy
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                Imię i nazwisko: Jan Kowalski
-                                NIP: 1234567890
                             </Typography>
                         </Box>
                     </Stack>
@@ -61,7 +58,7 @@ const CustomersPage = () => {
                 )}
             </AutoSizer>
             </div>
-            <CustomerAddDialog />
+            {showAddCustomerModal && <CustomerAddDialog />}
         </div>
     )
 }
