@@ -1,4 +1,4 @@
-import React, {CSSProperties, useEffect, useMemo} from 'react';
+import React, {CSSProperties, useEffect, useMemo, useState} from 'react';
 import AppBar from "../AppBar";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -75,6 +75,22 @@ export default function WarehouseIndex() {
         const totalColumns = (headers?.length ?? 0) + 2;
         return columnWidth * totalColumns;
     }, [headers?.length]);
+
+    const titleSection = React.useRef(null);
+    const [titleSectionHeight, setTitleSectionHeight] = useState(0);
+
+    useEffect(() => {
+        const updateHeight = () => {
+            setTitleSectionHeight(titleSection?.current?.clientHeight ?? 0);
+        };
+
+        updateHeight(); // Initial calculation
+        window.addEventListener('resize', updateHeight);
+
+        return () => {
+            window.removeEventListener('resize', updateHeight);
+        };
+    }, [titleSection])
 
     const selectRow = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
         setSelectedRows(prev => {
@@ -185,7 +201,7 @@ export default function WarehouseIndex() {
     return (
         <div>
         <AppBar/>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }} ref={titleSection}>
                 <Grid container spacing={3}>
                     <Grid item>
                         <Typography variant={'h5'}> Zarządzanie stanami magazynowymi </Typography>
@@ -244,52 +260,59 @@ export default function WarehouseIndex() {
             </Grid>
             </div>
             {displayCategoryRows < 0 ? t("infoMessages.select_category_first") : (
-                <div style={{ height: 'calc(100vh - 200px)', width: "100vw", overflow: "auto" }}> {/* Adjust 200px based on your header/nav heights */}
+                <div style={{position: "absolute", top: titleSectionHeight + headerHeight, bottom: 0, left: 0, right: 0, overflow: "auto", boxSizing: "border-box"}}>
                     <TableHead>
-                    <TableRow>
-                        <TableCell key={"select-header"} style={{ width: columnWidth, minWidth: columnWidth, textAlign: "center" }}>
-                            <Typography>Selected: {selectedRows?.length}</Typography>
-                            <Button onClick={() => { setSelectedRows([]) }}>Unselect All</Button>
-                            <Button onClick={() => {
-                                setSelectedRows(Array.from(new Set([...selectedRows, ...warehouse?.warehouses?.map(row => row?.id) ?? []])))
-                            }}>
-                                Select All Visible
-                            </Button>
-                        </TableCell>
-                        {headers?.map((headerMap, index) => {
-                            const header = headerMap?.name;
-
-                            return (
-                            <TableCell key={index} style={{ width: columnWidth, minWidth: columnWidth }}>
-                                <Stack direction={"row"} spacing={1} justifyContent={"center"} alignItems={"center"}>
-                                    <Typography>{header}</Typography>
-                                    <FloatingSearchButton type={headerMap?.type} onChange={(e) => { changeFilter(e, headerMap?.name) }} value={filter?.[headerMap?.name]} />
-                            </Stack>
+                        <TableRow>
+                            <TableCell key={"select-header"}
+                                       style={{width: columnWidth, minWidth: columnWidth, textAlign: "center"}}>
+                                <Typography>Selected: {selectedRows?.length}</Typography>
+                                <Button onClick={() => {
+                                    setSelectedRows([])
+                                }}>Unselect All</Button>
+                                <Button onClick={() => {
+                                    setSelectedRows(Array.from(new Set([...selectedRows, ...warehouse?.warehouses?.map(row => row?.id) ?? []])))
+                                }}>
+                                    Select All Visible
+                                </Button>
                             </TableCell>
-                        )})}
-                        <TableCell style={{ width: columnWidth, minWidth: columnWidth }}>
+                            {headers?.map((headerMap, index) => {
+                                const header = headerMap?.name;
 
-                </TableCell>
-                    </TableRow>
-                </TableHead>
-                    <div style={{ height: `calc(100% - ${headerHeight}px)` }}>
-                    <AutoSizer>
-                        {({ height, width }) => (
-                            <FixedSizeList
-                                height={height}
-                                width={getTableWidth}
-                                itemCount={warehouse?.warehouses?.length ?? 0}
-                                itemSize={50}
-                            >
-                                {renderRow}
-                            </FixedSizeList>
-                        )}
-                    </AutoSizer>
+                                return (
+                                    <TableCell key={index} style={{width: columnWidth, minWidth: columnWidth}}>
+                                        <Stack direction={"row"} spacing={1} justifyContent={"center"}
+                                               alignItems={"center"}>
+                                            <Typography>{header}</Typography>
+                                            <FloatingSearchButton type={headerMap?.type} onChange={(e) => {
+                                                changeFilter(e, headerMap?.name)
+                                            }} value={filter?.[headerMap?.name]}/>
+                                        </Stack>
+                                    </TableCell>
+                                )
+                            })}
+                            <TableCell style={{width: columnWidth, minWidth: columnWidth}}>
+
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <div style={{height: "100%"}}>
+                        <AutoSizer>
+                            {({height, width}) => (
+                                <FixedSizeList
+                                    height={height}
+                                    width={getTableWidth}
+                                    itemCount={warehouse?.warehouses?.length ?? 0}
+                                    itemSize={50}
+                                >
+                                    {renderRow}
+                                </FixedSizeList>
+                            )}
+                        </AutoSizer>
                     </div>
                 </div>
             )}
 
-            { editEntryId >= 0 && <EditEntryModal /> }
+            {editEntryId >= 0 && <EditEntryModal/>}
             {showCategoryList === true && <CategoriesDialog /> }
             {editCategoryId >= 0 && categories && (
                 <CategoryEditor />
