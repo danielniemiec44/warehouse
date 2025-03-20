@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { useLocation, useNavigate } from 'react-router-dom';
+import AppBar from "./AppBar";
 
 const PrivateRoute = ({ children }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const location = useLocation();
     const [loading, setLoading] = useState(true);
+    const user = useSelector((state) => state.user?.user);
 
     useEffect(() => {
-        const user = JSON.parse(sessionStorage.getItem('user'));
         if (user) {
             dispatch({ type: 'LOGIN_SUCCESS', payload: user });
             if(location.pathname === '/') {
@@ -26,7 +27,7 @@ const PrivateRoute = ({ children }) => {
         return <div>Loading...</div>;
     }
 
-    return children;
+    return <>{user && <AppBar/>}{children}</>;
 };
 
 PrivateRoute.propTypes = {

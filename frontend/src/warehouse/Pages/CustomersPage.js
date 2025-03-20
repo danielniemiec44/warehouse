@@ -86,8 +86,7 @@ const CustomersPage = () => {
 
     return (
         <div>
-            <AppBar/>
-            <div style={{height: 'calc(100vh - 120px)', width: '100%', padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
+            <div style={{width: '100%', padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
                 <div style={{
                     position: "absolute",
                     width: '100%',

@@ -200,7 +200,6 @@ export default function WarehouseIndex() {
 
     return (
         <div>
-        <AppBar/>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 20 }} ref={titleSection}>
                 <Grid container spacing={3}>
                     <Grid item>

@@ -15,6 +15,8 @@ import DialogActions from "@mui/material/DialogActions";
 import {t} from "i18next";
 import Button from "@mui/material/Button";
 import SquareButton from "../Utils/SquareButton";
+import Grid from "@mui/material/Grid";
+import CustomersPage from "../Pages/CustomersPage";
 
 function SellModal(){
     const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
@@ -43,11 +45,13 @@ function SellModal(){
     }
 
     return (
-        <Dialog open={true}>
+        <Dialog open={true} maxWidth={"lg"} fullWidth>
             <DialogTitle>
                 <Typography variant={'h6'}>Kompletowanie zamówienia - sprzedaż z magazynu</Typography>
             </DialogTitle>
-            <DialogContent>
+            <DialogContent style={{ height: "100%" }}>
+                <Grid container spacing={2}>
+                    <Grid item xs={6} style={{ height: "40vh", overflowY: "scroll" }}>
                 {saleItems?.map((item, index) => {
                     const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
 
@@ -106,6 +110,11 @@ function SellModal(){
                         </Accordion>
                     )
                 })}
+                    </Grid>
+                    <Grid item xs={6}>
+                        <CustomersPage />
+                    </Grid>
+                </Grid>
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => { dispatch({ type: "CLOSE_COMPLETING_SALE_MODAL" }) }}>{t("dialogActions.cancel")}</Button>

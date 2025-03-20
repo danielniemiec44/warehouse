@@ -15,7 +15,6 @@ import SummaryWarehouseStatus from "./SummaryWarehouseStatus";
 export default function WarehouseIndex() {
     return (
     <div style={{width: "100%"}}>
-    <AppBar/>
         <Grid container spacing={2} sx={{display: 'flex', alignItems: 'center', alignContent: 'center', flexDirection: 'row', justifyContent: 'center'}}>
             <Grid item xs={3}>
                 <Paper variant={"outlined"} sx={{ padding: "20px", marginTop: "20px", backgroundColor: red[500], color: "white"}}>
