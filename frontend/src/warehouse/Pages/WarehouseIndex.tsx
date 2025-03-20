@@ -216,6 +216,7 @@ export default function WarehouseIndex() {
                 {/*<Button variant={"contained"} color={"primary"} style={{marginRight: "10px"}} onClick={handleOpenAddDeliveryModal}>Dodaj dostawę</Button>*/}
                 <Grid item lg={6} xs={12}></Grid>
                 <Grid item lg={3} xs={12}>
+                    <Stack spacing={2}>
                 <ExtendableMenuButton
                     title={"Zaznaczenie"}
                     disabled={selectedRows.length === 0}
@@ -232,9 +233,13 @@ export default function WarehouseIndex() {
                             })
                         }
                     }]} />
+                    <Tooltip title={"Dodaj produkt"} arrow>
+                        <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
+                    </Tooltip>
+                    </Stack>
                 </Grid>
                 <Grid item lg={3} xs={12}>
-                    <Button variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}><Typography>Wybierz kategorię produktu<br />Wybrana: <b>{categories?.find(category => category?.id === displayCategoryRows)?.name ?? "ŻADNA"}</b></Typography></Button>
+                    <Button fullWidth variant={"contained"} color={"primary"} onClick={() => { handleOpenCategoryList() }}><Typography>Wybierz kategorię produktu<br />Wybrana: <b>{categories?.find(category => category?.id === displayCategoryRows)?.name ?? "ŻADNA"}</b></Typography></Button>
                 </Grid>
             </Grid>
             </div>
@@ -263,9 +268,7 @@ export default function WarehouseIndex() {
                             </TableCell>
                         )})}
                         <TableCell style={{ width: columnWidth, minWidth: columnWidth }}>
-                            <Tooltip title={"Dodaj produkt"} arrow>
-                                <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
-                            </Tooltip>
+
                 </TableCell>
                     </TableRow>
                 </TableHead>
