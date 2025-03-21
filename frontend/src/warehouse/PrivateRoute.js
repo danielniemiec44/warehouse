@@ -19,6 +19,8 @@ const PrivateRoute = ({ children }) => {
             } else {
                 navigate(location.pathname, { replace: true });
             }
+        } else {
+            navigate('/', { replace: true });
         }
         setLoading(false);
     }, [dispatch, navigate, location.pathname]);
