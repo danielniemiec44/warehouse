@@ -49,10 +49,10 @@ function SellModal(){
             <DialogTitle>
                 <Typography variant={'h6'}>Kompletowanie zamówienia - sprzedaż z magazynu</Typography>
             </DialogTitle>
-            <DialogContent style={{ height: "100%" }}>
-                <Grid container spacing={2}>
-                    <Grid item xs={6} style={{ height: "40vh", overflowY: "scroll" }}>
-                {saleItems?.map((item, index) => {
+            <DialogContent style={{ height: "calc(100vh - 200px)", boxSizing: "border-box" }}>
+                <Grid container spacing={2} style={{ height: "100%" }}>
+                    <Grid item xs={12} md={6} style={{ height: "calc(100% - 40px)", overflowY: "auto", marginTop: 20, marginBottom: 20, boxSizing: "border-box" }}>
+            {saleItems?.map((item, index) => {
                     const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
 
                     return (
@@ -111,7 +111,7 @@ function SellModal(){
                     )
                 })}
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} md={6}>
                         <CustomersPage />
                     </Grid>
                 </Grid>

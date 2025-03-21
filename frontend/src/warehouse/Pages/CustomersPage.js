@@ -37,12 +37,15 @@ const CustomersPage = () => {
     ];
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const mainView = React.useRef(null);
+    const [listHeight, setListHeight] = React.useState(0)
 
     useEffect(() => {
+        setListHeight(window.innerHeight - 200);
         if (!mainView.current) return;
 
         const handleViewportChange = () => {
             const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+
             mainView.current.scrollTo({
                 left: selectedCustomer ? vw : 0,
                 behavior: "smooth"
@@ -86,7 +89,7 @@ const CustomersPage = () => {
 
     return (
         <div>
-            <div style={{width: '100%', padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
+            <div style={{width: '100%', height: "calc(100vh - 200px)", padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
                 <div style={{
                     position: "absolute",
                     width: '100%',
@@ -137,18 +140,14 @@ const CustomersPage = () => {
                         dispatch({type: "OPEN_ADD_CUSTOMER_MODAL"})
                     }}>+</SquareButton>
                 </Box>
-                <AutoSizer disableWidth>
-                    {({height}) => (
                         <FixedSizeList
-                            height={height}
+                            height={listHeight}
                             width={"100%"}
                             itemCount={data?.length || 0}
                             itemSize={100}
                         >
                             {renderRow}
                         </FixedSizeList>
-                    )}
-                </AutoSizer>
             </div>
             {showAddCustomerModal && <CustomerAddDialog/>}
         </div>
