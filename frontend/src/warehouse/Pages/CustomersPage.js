@@ -106,29 +106,34 @@ const CustomersPage = () => {
                             </Stack>
                         </Button>
                         <Paper style={{ margin: 30, padding: 30 }} elevation={4}>
-                            <Typography variant={"h6"}>
-                            {selectedCustomer?.customer_name} {selectedCustomer?.customer_surname}
-                            </Typography>
-                            <Typography variant={"body1"}>
-                            {selectedCustomer?.companyName}
-                            </Typography>
-                            <Typography variant={"body2"}>
-                                <b>Adres E-mail: </b> {selectedCustomer?.email}
-                            </Typography>
-                            <Typography variant={"body2"}>
-                                <b>Numer telefonu: </b> {selectedCustomer?.phone}
-                            </Typography>
+                            <Stack>
+                                {customerTypes.find((type) => type.value === selectedCustomer?.type)?.icon}
+                                <div>
+                                    <Typography variant={"h6"}>
+                                    {selectedCustomer?.customer_name} {selectedCustomer?.customer_surname}
+                                    </Typography>
+                                    <Typography variant={"body1"}>
+                                    {selectedCustomer?.companyName}
+                                    </Typography>
+                                    <Typography variant={"body2"}>
+                                        <b>Adres E-mail: </b> {selectedCustomer?.email}
+                                    </Typography>
+                                    <Typography variant={"body2"}>
+                                        <b>Numer telefonu: </b> {selectedCustomer?.phone}
+                                    </Typography>
 
-                            {/*the rest of customers properties - address, postalCode, city, */}
-                            <Typography variant={"body2"}>
-                                <b>Adres:</b> {selectedCustomer?.address}
-                            </Typography>
-                            <Typography variant={"body2"}>
-                                <b>Kod pocztowy:</b> {selectedCustomer?.postalCode}
-                            </Typography>
-                            <Typography variant={"body2"}>
-                                <b>Miejscowość:</b> {selectedCustomer?.city}
-                            </Typography>
+                                    {/*the rest of customers properties - address, postalCode, city, */}
+                                    <Typography variant={"body2"}>
+                                        <b>Adres:</b> {selectedCustomer?.address}
+                                    </Typography>
+                                    <Typography variant={"body2"}>
+                                        <b>Kod pocztowy:</b> {selectedCustomer?.postalCode}
+                                    </Typography>
+                                    <Typography variant={"body2"}>
+                                        <b>Miejscowość:</b> {selectedCustomer?.city}
+                                    </Typography>
+                                </div>
+                            </Stack>
                         </Paper>
                     </Stack>
                     </Box>

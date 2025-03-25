@@ -1,4 +1,4 @@
-function useCustomFetch(endpoint, method = "GET", body = null) {
+function CustomFetchForUseQuery(endpoint, method = "GET", body = null) {
     return async () => {
         const response = await fetch(`/api/${endpoint}`, {
             method,
@@ -20,4 +20,4 @@ function useCustomFetch(endpoint, method = "GET", body = null) {
     };
 }
 
-export default useCustomFetch;
+export default CustomFetchForUseQuery;
