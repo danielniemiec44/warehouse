@@ -35,7 +35,7 @@ const CustomersPage = () => {
             icon: <PersonIcon />
         }
     ];
-    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const selectedCustomer = useSelector((state) => state.warehouse.selectedCustomer);
     const mainView = React.useRef(null);
     const [listHeight, setListHeight] = React.useState(0)
     const [search, setSearch] = React.useState("");
@@ -111,7 +111,7 @@ const CustomersPage = () => {
 
         return (
             <Box style={style}>
-                <Paper elevation={4} style={{ padding: 10, margin: 10, boxSizing: "border-box", height: "80%", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }} onClick={() => setSelectedCustomer(row)}>
+                <Paper elevation={4} style={{ padding: 10, margin: 10, boxSizing: "border-box", height: "80%", display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }} onClick={() => { dispatch({ "type": "SELECT_CUSTOMER", payload: row }) }}>
                     <Stack direction="row" spacing={2} alignItems="center">
                         <Avatar sx={{ bgcolor: 'primary.main' }}>
                             { customerTypes?.find((type) => type?.value === row?.type)?.icon }
@@ -144,7 +144,7 @@ const CustomersPage = () => {
                 }}>
                     <Box width="fit-content">
                     <Stack direction={"column"} style={{ justifyContent: "start" }} spacing={5} justifyContent={"start"}>
-                        <Button fullWidth={false} onClick={() => setSelectedCustomer(null)}>
+                        <Button fullWidth={false} onClick={() => { dispatch({ type: "RESET_CUSTOMER" }) }}>
                             <Stack direction={"row"} spacing={1}>
                                 <ArrowBackIosIcon />
                                 <Typography>Powrót do listy klientów</Typography>

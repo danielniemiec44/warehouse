@@ -17,11 +17,19 @@ import Button from "@mui/material/Button";
 import SquareButton from "../Utils/SquareButton";
 import Grid from "@mui/material/Grid";
 import CustomersPage from "../Pages/CustomersPage";
+import {useMutation} from "react-query";
+import eventEmitter from "../Utils/eventEmitter";
+import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 
 function SellModal(){
     const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
     const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, []);
     const dispatch = useDispatch();
+    const customer = useSelector((state: RootReducerTypes) => state.warehouse.selectedCustomer);
+
+    const validateSale = React.useMemo(() => {
+        return saleItems?.length === 0 || !customer;
+    }, [saleItems, customer]);
 
     useEffect(() => {
         console.log("Sale items: ", saleItems);
@@ -43,6 +51,38 @@ function SellModal(){
             payload: updatedPayload
         });
     }
+
+    const completeSale = () => {
+        mutation.mutate();
+    };
+
+
+        const mutation = useMutation(() => {
+            const saleItemsPayload = saleItems.map((item) => {
+                return {
+                    id: item.id,
+                    quantity: item.quantity
+                }
+            });
+
+            const payload = {
+                saleItems: saleItemsPayload,
+                buyerId: customer.id,
+                sellerId: -1
+            }
+
+            return CustomFetchForUseQuery(`sell`, 'POST', payload)();
+        }, {
+            onSuccess: (data) => {
+                console.log("Data successfully sent to backend", data);
+                eventEmitter.emit('showSnackbar', { message: t("infoMessages.success"), transition: 'slide', variant: 'success' });
+            },
+            onError: (error: any) => {
+                console.error("Error while sending data to backend", error);
+                const errorMessage = error?.error;
+                eventEmitter.emit('showSnackbar', { message: errorMessage, transition: 'slide', variant: 'error' });
+            }
+        });
 
     return (
         <Dialog open={true} maxWidth={"lg"} fullWidth>
@@ -118,6 +158,7 @@ function SellModal(){
             </DialogContent>
             <DialogActions>
                 <Button onClick={() => { dispatch({ type: "CLOSE_COMPLETING_SALE_MODAL" }) }}>{t("dialogActions.cancel")}</Button>
+                <Button disabled={validateSale} onClick={completeSale} color={"primary"}>{t("dialogActions.complete_sale")}</Button>
             </DialogActions>
         </Dialog>
     );

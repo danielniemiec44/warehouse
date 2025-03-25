@@ -7,7 +7,8 @@ const initialState = {
     productDetailsId: -1,
     saleItems: null,
     showSaleCompletingModal: false,
-    filter: []
+    filter: [],
+    selectedCustomer: null
 };
 
 interface WarehouseReducerTypes {
@@ -88,7 +89,6 @@ const warehouseReducer = (state = initialState, action) => {
                 ...state,
                 showSaleCompletingModal: false
             }
-
             case "FILTER_ROWS":
                 return {
                     ...state,
@@ -98,6 +98,16 @@ const warehouseReducer = (state = initialState, action) => {
             return {
                 ...state,
                 filter: initialState.filter
+            }
+        case "SELECT_CUSTOMER":
+            return {
+                ...state,
+                selectedCustomer: action.payload
+            }
+        case "RESET_CUSTOMER":
+            return {
+                ...state,
+                selectedCustomer: initialState.selectedCustomer
             }
         default:
             return state;

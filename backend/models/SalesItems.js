@@ -34,6 +34,20 @@ const SalesItems = sequelize.define('SalesItems', {
     totalPrice: {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false
+    },
+    barcode: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        defaultValue: DataTypes.NOW
     }
 }, {
     tableName: 'SalesItems',

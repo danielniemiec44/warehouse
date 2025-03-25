@@ -19,7 +19,8 @@
     "confirm": "Potwierdź",
     "clear": "Wyczyść",
     "add_category": "Dodaj kategorię",
-    "close": "Zamknij"
+    "close": "Zamknij",
+    "complete_sale": "Zakończ sprzedaż"
   },
   "dialogTitles": {
     "categories": "Kategorie",
@@ -53,7 +54,8 @@
   "infoMessages": {
     "no_categories": "Brak dostępnych kategorii, dodaj jakąś.",
     "category_add_success": "Kategoria dodana pomyślnie.",
-    "select_category_first": "Najpierw należy wybrać kategorię."
+    "select_category_first": "Najpierw należy wybrać kategorię.",
+    "success": "Sukces"
   },
   "options": {
     "text": "Tekst",

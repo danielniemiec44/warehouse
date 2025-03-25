@@ -17,7 +17,8 @@ const User = require('./models/User');
 const Documents = require('./models/Documents');
 const Customer = require('./models/Customer');
 const {getAllCustomers, createNewCustomer, generateRandomCustomers} = require("./modules/CustomersData");
-
+const Barcode = require('./models/Barcode');
+const {sell} = require("./modules/SellData");
 
 const PORT = 4000;
 const app = express();
@@ -74,14 +75,14 @@ WarehouseProperties.belongsTo(CategoryCustomField, {
 
 // Sales belongs to User (who made the sale)
 Sales.belongsTo(User, {
-  foreignKey: 'userId',
-  as: 'saleUser' // Zmieniony alias
+  foreignKey: 'sellerId',
+  as: 'seller'  // Changed from 'sellerId' to 'seller'
 });
 
 // Sales belongs to Warehouse (from which the sale was made)
 Sales.belongsTo(Warehouse, {
-  foreignKey: 'warehouseId',
-  as: 'saleWarehouse' // Zmieniony alias
+  foreignKey: 'id',
+  as: 'productId' // Zmieniony alias
 });
 
 // Sales has many SalesItems (products in the sale)
@@ -104,14 +105,14 @@ Documents.belongsTo(Sales, {
 
 // User has many Sales (sales made by the user)
 User.hasMany(Sales, {
-  foreignKey: 'userId',
-  as: 'userSales' // Zmieniony alias
+  foreignKey: 'sellerId',
+  as: 'sales' // Zmieniony alias
 });
 
 // Warehouse has many SalesItems (products sold from the warehouse)
 Warehouse.hasMany(SalesItems, {
-  foreignKey: 'warehouseId',
-  as: 'warehouseSalesItems' // Zmieniony alias
+  foreignKey: 'productId',
+  as: 'productId' // Zmieniony alias
 });
 
 SalesItems.belongsTo(Sales, {
@@ -126,14 +127,14 @@ SalesItems.belongsTo(Warehouse, {
 
 // Customer can have many Sales
 Customer.hasMany(Sales, {
-  foreignKey: 'customerId',
-  as: 'customerSales'
+  foreignKey: 'buyerId',
+  as: 'purchases'
 });
 
 // Sales belongs to a Customer
 Sales.belongsTo(Customer, {
-  foreignKey: 'customerId',
-  as: 'customer'
+  foreignKey: 'buyerId',
+  as: 'buyer'
 });
 
 
@@ -198,4 +199,8 @@ app.post("/customers", async (req, res) => {
 
 app.post("/generate-customers/:count", async (req, res) => {
   await generateRandomCustomers(req, res);
+});
+
+app.post("/sell", async (req, res) => {
+    await sell(req, res);
 });

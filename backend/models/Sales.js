@@ -41,8 +41,30 @@ const Sales = sequelize.define('Sales', {
         }
     },
     totalAmount: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
+        type: DataTypes.VIRTUAL,
+        get() {
+            if (!this.saleItems) {
+                return 0; // Return 0 if saleItems aren't loaded
+            }
+
+            // Sum up quantities from all associated SalesItems
+            return this.saleItems.reduce((sum, item) => {
+                return sum + parseFloat(item.quantity);
+            }, 0);
+        }
+    },
+    totalPrice: {
+        type: DataTypes.VIRTUAL,
+        get() {
+            if (!this.saleItems) {
+                return 0; // Return 0 if saleItems aren't loaded
+            }
+
+            // Sum up price × quantity from all associated SalesItems
+            return this.saleItems.reduce((sum, item) => {
+                return sum + (parseFloat(item.price) * parseFloat(item.quantity));
+            }, 0);
+        }
     },
     paymentStatus: {
         type: DataTypes.ENUM('pending', 'paid', 'canceled', 'refunded'),
