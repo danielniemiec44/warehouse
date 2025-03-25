@@ -38,6 +38,7 @@ const CustomersPage = () => {
     const [selectedCustomer, setSelectedCustomer] = useState(null);
     const mainView = React.useRef(null);
     const [listHeight, setListHeight] = React.useState(0)
+    const [search, setSearch] = React.useState("");
 
     useEffect(() => {
         setListHeight(window.innerHeight - 200);
@@ -60,9 +61,35 @@ const CustomersPage = () => {
         };
     }, [selectedCustomer]);
 
+    const searchData = React.useMemo(() => {
+        const searchKeywords = search.toLowerCase().split(" ").filter(keyword => keyword.length > 0);
+
+        if (searchKeywords.length === 0) return data;
+
+        return data?.filter((customer) => {
+            const customerData = [
+                customer.customer_name,
+                customer.customer_surname,
+                customer.companyName,
+                customer.email,
+                customer.phone,
+                customer.address,
+                customer.postalCode,
+                customer.city,
+                customer.nip
+            ].join(' ').toLowerCase();
+
+            return searchKeywords.every(keyword => customerData.includes(keyword));
+        });
+    }, [data, search]);
+
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    }
+
 
     const renderRow = ({ index, style }) => {
-        const row = data[index];
+        const row = searchData[index];
 
         return (
             <Box style={style}>
@@ -143,7 +170,7 @@ const CustomersPage = () => {
                 </div>
                 <Box px={1} width="100%"
                      style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 10}}>
-                    <TextField id="standard-basic" label="Wyszukaj klienta" variant="outlined" fullWidth/>
+                    <TextField id="standard-basic" label="Wyszukaj klienta" variant="outlined" fullWidth value={search} onChange={handleSearchChange} />
                     <SquareButton size={55} style={{fontSize: 30}} variant={"outlined"} onClick={() => {
                         dispatch({type: "OPEN_ADD_CUSTOMER_MODAL"})
                     }}>+</SquareButton>
@@ -151,7 +178,7 @@ const CustomersPage = () => {
                         <FixedSizeList
                             height={listHeight}
                             width={"100%"}
-                            itemCount={data?.length || 0}
+                            itemCount={searchData?.length || 0}
                             itemSize={100}
                         >
                             {renderRow}
