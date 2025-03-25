@@ -115,6 +115,9 @@ const CustomersPage = () => {
                                     <Typography variant={"body1"}>
                                     {selectedCustomer?.companyName}
                                     </Typography>
+                                    <Typography variant={"body1"}>
+                                        {selectedCustomer?.nip}
+                                    </Typography>
                                     <Typography variant={"body2"}>
                                         <b>Adres E-mail: </b> {selectedCustomer?.email}
                                     </Typography>
