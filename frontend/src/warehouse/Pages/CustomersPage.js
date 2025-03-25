@@ -39,12 +39,29 @@ const CustomersPage = () => {
     const mainView = React.useRef(null);
     const [listHeight, setListHeight] = React.useState(0)
     const [search, setSearch] = React.useState("");
+    const dataList = React.useRef(null);
+    // Add a new ref for the DOM element
+    const listOuterRef = React.useRef(null);
 
     useEffect(() => {
-        setListHeight(window.innerHeight - 200);
-        if (!mainView.current) return;
+        if (!listOuterRef.current) return;
 
+        const calculateHeight = () => {
+            const rect = listOuterRef.current.getBoundingClientRect();
+            const absoluteTop = rect.top + window.scrollY;
+
+            setListHeight(window.innerHeight - absoluteTop - 20);
+        };
+
+        // Calculate height immediately
+        calculateHeight();
+
+        // Recalculate on resize
+        window.addEventListener('resize', calculateHeight);
+
+        // Handle viewport scrolling for customer selection
         const handleViewportChange = () => {
+            if (!mainView.current) return;
             const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
 
             mainView.current.scrollTo({
@@ -53,13 +70,14 @@ const CustomersPage = () => {
             });
         };
 
-        handleViewportChange(); // Initial scroll
+        handleViewportChange();
         window.addEventListener('resize', handleViewportChange);
 
         return () => {
+            window.removeEventListener('resize', calculateHeight);
             window.removeEventListener('resize', handleViewportChange);
         };
-    }, [selectedCustomer]);
+    }, [selectedCustomer, mainView, listOuterRef]);
 
     const searchData = React.useMemo(() => {
         const searchKeywords = search.toLowerCase().split(" ").filter(keyword => keyword.length > 0);
@@ -116,7 +134,7 @@ const CustomersPage = () => {
 
     return (
         <div>
-            <div style={{width: '100%', height: "calc(100vh - 200px)", padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
+            <div style={{width: '100%', height: listHeight, padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
                 <div style={{
                     position: "absolute",
                     width: '100%',
@@ -175,14 +193,18 @@ const CustomersPage = () => {
                         dispatch({type: "OPEN_ADD_CUSTOMER_MODAL"})
                     }}>+</SquareButton>
                 </Box>
+                <Box>
                         <FixedSizeList
-                            height={listHeight}
+                            height={listHeight - 80}
                             width={"100%"}
                             itemCount={searchData?.length || 0}
                             itemSize={100}
+                            ref={dataList}
+                            outerRef={listOuterRef}
                         >
                             {renderRow}
                         </FixedSizeList>
+                </Box>
             </div>
             {showAddCustomerModal && <CustomerAddDialog/>}
         </div>
