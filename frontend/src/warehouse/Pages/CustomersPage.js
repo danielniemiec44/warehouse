@@ -161,7 +161,7 @@ const CustomersPage = () => {
                                     {selectedCustomer?.companyName}
                                     </Typography>
                                     <Typography variant={"body1"}>
-                                        {selectedCustomer?.nip}
+                                        {selectedCustomer?.nip !== null && <div><b>NIP:</b> {selectedCustomer?.nip}</div>}
                                     </Typography>
                                     <Typography variant={"body2"}>
                                         <b>Adres E-mail: </b> {selectedCustomer?.email}
