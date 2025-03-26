@@ -72,7 +72,8 @@ const getWarehouseDataByCategoryId = async (req, res) => {
                     as: 'customField',
                     required: false
                 }]
-            }]
+            }],
+            order: [['updatedAt', 'DESC']]
         };
 
         if (customFieldFilters.length > 0) {
