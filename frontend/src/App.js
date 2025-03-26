@@ -14,6 +14,7 @@ import EditWarehouseModal from './warehouse/Components/EditWarehouseModal';
 import Panel from './warehouse/panel';
 import CustomersPage from "./warehouse/Pages/CustomersPage";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
+import {OrdersPage} from "./warehouse/Pages/OrdersPage";
 
 function App() {
   const queryClient = new QueryClient({
@@ -52,6 +53,7 @@ function App() {
               <Route path="/main" element={<PrivateRoute><Main /></PrivateRoute>} />
               <Route path="/panel" element={<PrivateRoute><Panel /></PrivateRoute>} />
               <Route path="/customers" element={<PrivateRoute><CustomersPage /></PrivateRoute>} />
+              <Route path="/orders" element={<PrivateRoute><OrdersPage /></PrivateRoute>} />
             </Routes>
           </Router>
           </ThemeProvider>

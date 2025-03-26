@@ -68,5 +68,8 @@
   },
   "snackbarMessages": {
     "entry_saved": "Pomyślnie dokonano wpisu."
+  },
+  "pages": {
+    "orders": "Zamówienia"
   }
 }

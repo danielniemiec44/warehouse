@@ -19,6 +19,7 @@ const Customer = require('./models/Customer');
 const {getAllCustomers, createNewCustomer, generateRandomCustomers} = require("./modules/CustomersData");
 const Barcode = require('./models/Barcode');
 const {sell} = require("./modules/SellData");
+const {getOrders} = require("./modules/OrdersData");
 
 const PORT = 4000;
 const app = express();
@@ -204,3 +205,7 @@ app.post("/generate-customers/:count", async (req, res) => {
 app.post("/sell", async (req, res) => {
     await sell(req, res);
 });
+
+app.get("/orders", async (req, res) => {
+    await getOrders(req, res);
+})
