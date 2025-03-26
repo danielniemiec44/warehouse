@@ -86,7 +86,12 @@ const Sales = sequelize.define('Sales', {
     }
 }, {
     tableName: 'Sales',
-    timestamps: true
+    timestamps: true,
+    defaultScope: {
+        include: [{
+            association: 'saleItems'  // This matches the alias defined in your associations
+        }]
+    }
 });
 
 module.exports = Sales;
