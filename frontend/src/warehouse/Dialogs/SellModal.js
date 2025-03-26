@@ -20,6 +20,7 @@ import CustomersPage from "../Pages/CustomersPage";
 import {useMutation} from "react-query";
 import eventEmitter from "../Utils/eventEmitter";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
+import TextField from "@mui/material/TextField";
 
 function SellModal(){
     const saleItems = useSelector((state: RootReducerTypes) => state.warehouse.saleItems);
@@ -39,13 +40,29 @@ function SellModal(){
 
 
 
-    // Define a proper type instead of using 'any'
-    const updateQuantity = (item, inputValue) => {
-        const updatedPayload = saleItems?.map((currentItem) =>
-            currentItem.id === item.id
-                ? { ...currentItem, quantity: Number(inputValue) }
-                : currentItem
-        );
+    function clampQuantity(value, minVal, maxVal) {
+        return Math.min(Math.max(value, minVal), maxVal);
+    }
+
+// 2. A single function to get the updated sale items with clamped quantity
+    function getUpdatedSaleItems(item, newQuantity, saleItems, warehouse) {
+        return saleItems.map((currentItem) => {
+            if (currentItem.id !== item.id) return currentItem;
+
+            // Look up maxQuantity for this item in warehouse or default to Infinity
+            const warehouseItem = warehouse?.warehouses?.find((w) => w?.id === item?.id);
+            const maxQuantity = warehouseItem?.quantity ?? Infinity;
+
+            // If you want a minimum of 0, adjust here (or change to 1, etc.)
+            const clampedQuantity = clampQuantity(Number(newQuantity), 0, maxQuantity);
+
+            return { ...currentItem, quantity: clampedQuantity };
+        });
+    }
+
+// 3. updateQuantity: uses the same helper but sets quantity directly
+    function updateQuantity(item, inputValue) {
+        const updatedPayload = getUpdatedSaleItems(item, inputValue, saleItems, warehouse);
 
         dispatch({
             type: "OPEN_COMPLETING_SALE_MODAL",
@@ -53,20 +70,10 @@ function SellModal(){
         });
     }
 
-    const changeQuantityByButton = (item, value) => {
-        const updatedPayload = saleItems?.map((currentItem) => {
-            if (currentItem.id !== item.id) return currentItem;
-
-            const maxQuantity = warehouse?.warehouses?.find(row => row?.id === item?.id)?.quantity;
-            const newQuantity = Number(currentItem.quantity) + value;
-
-            // Return unchanged item if quantity would be invalid
-            if (newQuantity < 1 || (maxQuantity && newQuantity > maxQuantity)) {
-                return currentItem;
-            }
-
-            return { ...currentItem, quantity: newQuantity };
-        });
+// 4. changeQuantityByButton: calculates new quantity and then reuses the same helper
+    function changeQuantityByButton(item, value) {
+        const newQuantity = Number(item.quantity) + value;
+        const updatedPayload = getUpdatedSaleItems(item, newQuantity, saleItems, warehouse);
 
         dispatch({
             type: "OPEN_COMPLETING_SALE_MODAL",
@@ -131,12 +138,16 @@ function SellModal(){
                                             e.stopPropagation();
                                             changeQuantityByButton(item, -1)
                                         }}>-</SquareButton>
-                                        <SquareTextField onClick={(e) => {
+                                        <TextField onClick={(e) => {
                                             e.stopPropagation();
-                                        }} min={0} max={foundRow?.quantity ?? 0} onChange={(e) => {
-                                            updateQuantity(item, e.target.value);
+                                        }}
+                                                   min={0}
+                                                   max={foundRow?.quantity ?? 0}
+                                                   onChange={(e) => {
+                                                       updateQuantity(item, e.target.value);
                                         }}
                                         value={item.quantity}
+                                                   style={{ width: 80 }} type={"number"}
                                         />
                                         <SquareButton size={30} style={{ fontSize: 20 }} onClick={(e) => {
                                             e.stopPropagation();
