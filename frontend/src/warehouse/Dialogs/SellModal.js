@@ -97,6 +97,7 @@ function SellModal(){
         }, {
             onSuccess: (data) => {
                 console.log("Data successfully sent to backend", data);
+                dispatch({ type: "CLOSE_COMPLETING_SALE_MODAL_WITH_RESET_QUANTITIES_AND_RESET_CUSTOMER" });
                 eventEmitter.emit('showSnackbar', { message: t("infoMessages.success"), transition: 'slide', variant: 'success' });
             },
             onError: (error: any) => {

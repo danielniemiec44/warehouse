@@ -89,6 +89,13 @@ const warehouseReducer = (state = initialState, action) => {
                 ...state,
                 showSaleCompletingModal: false
             }
+        case "CLOSE_COMPLETING_SALE_MODAL_WITH_RESET_QUANTITIES_AND_RESET_CUSTOMER":
+            return {
+                ...state,
+                saleItems: initialState.saleItems,
+                showSaleCompletingModal: false,
+                selectedCustomer: initialState.selectedCustomer
+            }
             case "FILTER_ROWS":
                 return {
                     ...state,

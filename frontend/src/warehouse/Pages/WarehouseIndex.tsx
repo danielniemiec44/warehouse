@@ -243,7 +243,7 @@ export default function WarehouseIndex() {
                                 type: "OPEN_COMPLETING_SALE_MODAL",
                                 payload: selectedRows?.map((selectedRow) => ({
                                     id: selectedRow,
-                                    quantity: saleItems?.find((saleItem) => saleItem?.id === selectedRow)?.quantity || 1
+                                    quantity: saleItems?.find((saleItem) => saleItem?.id === selectedRow)?.quantity ?? 0
                                 }))
                             })
                         }
