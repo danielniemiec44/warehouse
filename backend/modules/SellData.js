@@ -1,4 +1,4 @@
-const Warehouse = require("./Warehouse");
+const Warehouse = require("../models/Warehouse");
 const {sequelize} = require("../db");
 const Sales = require('../models/Sales');
 const SalesItems = require('../models/SalesItems');
@@ -15,14 +15,26 @@ const sell = async (req, res) => {
         // Create sale within transaction
         const sale = await Sales.create({ buyerId, sellerId }, { transaction });
 
-        // Add saleId to each item
         const saleItemsWithSaleId = saleItems.map(item => ({
-            ...item,
-            saleId: sale.id
+            productId: item.id, // Map frontend item.id to productId
+            quantity: item.quantity,
+            saleId: sale.id,
+            unitPrice: 0,
+            totalPrice: 0
         }));
 
         // Create sales items within transaction
         await SalesItems.bulkCreate(saleItemsWithSaleId, { transaction });
+
+        // try to distract the product qauntity
+        await Promise.all(saleItems.map(async item => {
+            const product = await Warehouse.findByPk(item.id, { transaction });
+            if (product.quantity < item.quantity) {
+                throw new Error('Not enough quantity');
+            }
+            product.quantity -= item.quantity;
+            await product.save({ transaction });
+        }));
 
         // Get items with product details
         const saleItemsWithProducts = await SalesItems.findAll({
@@ -31,16 +43,20 @@ const sell = async (req, res) => {
             transaction
         });
 
-        // Prepare documents
-        const documents = saleItemsWithProducts.map(item => ({
+        // Instead of creating one document per sale item
+        const document = {
             saleId: sale.id,
-            documentType: 'sale',
-            documentData: JSON.stringify(item),
+            documentType: 'receipt',
+            documentData: JSON.stringify({
+                sale: sale,
+                items: saleItemsWithProducts,
+                timestamp: new Date()
+            }),
             documentDate: new Date()
-        }));
+        };
 
-        // Create documents within transaction
-        await Documents.bulkCreate(documents, { transaction });
+// Create single document within transaction
+        await Documents.create(document, { transaction });
 
         // Commit transaction
         await transaction.commit();

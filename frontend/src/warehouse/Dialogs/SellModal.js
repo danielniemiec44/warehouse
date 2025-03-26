@@ -26,24 +26,46 @@ function SellModal(){
     const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, []);
     const dispatch = useDispatch();
     const customer = useSelector((state: RootReducerTypes) => state.warehouse.selectedCustomer);
+    const user = useSelector((state: RootReducerTypes) => state.user.user);
+
 
     const validateSale = React.useMemo(() => {
-        return saleItems?.length === 0 || !customer;
+        return saleItems?.length === 0 || !customer || saleItems.some((item) => item.quantity < 1);
     }, [saleItems, customer]);
 
     useEffect(() => {
         console.log("Sale items: ", saleItems);
     }, [saleItems]);
 
-    const changeQuantityByButton = (item: any, value: number) => {
+
+
+    // Define a proper type instead of using 'any'
+    const updateQuantity = (item, inputValue) => {
+        const updatedPayload = saleItems?.map((currentItem) =>
+            currentItem.id === item.id
+                ? { ...currentItem, quantity: Number(inputValue) }
+                : currentItem
+        );
+
+        dispatch({
+            type: "OPEN_COMPLETING_SALE_MODAL",
+            payload: updatedPayload
+        });
+    }
+
+    const changeQuantityByButton = (item, value) => {
         const updatedPayload = saleItems?.map((currentItem) => {
-            if (currentItem.id === item.id) {
-                const newQuantity = Number(currentItem.quantity) + value;
-                if(newQuantity < 1) return currentItem;
-                if(newQuantity > warehouse?.warehouses?.find((row) => row?.id === item?.id)?.quantity) return currentItem;
-                return { ...currentItem, quantity: newQuantity };
+            if (currentItem.id !== item.id) return currentItem;
+
+            const maxQuantity = warehouse?.warehouses?.find(row => row?.id === item?.id)?.quantity;
+            const newQuantity = Number(currentItem.quantity) + value;
+
+            // Return unchanged item if quantity would be invalid
+            if (newQuantity < 1 || (maxQuantity && newQuantity > maxQuantity)) {
+                return currentItem;
             }
-            return currentItem;
+
+            return { ...currentItem, quantity: newQuantity };
         });
 
         dispatch({
@@ -68,7 +90,7 @@ function SellModal(){
             const payload = {
                 saleItems: saleItemsPayload,
                 buyerId: customer.id,
-                sellerId: -1
+                sellerId: user.id ?? -1
             }
 
             return CustomFetchForUseQuery(`sell`, 'POST', payload)();
@@ -110,21 +132,10 @@ function SellModal(){
                                         }}>-</SquareButton>
                                         <SquareTextField onClick={(e) => {
                                             e.stopPropagation();
-                                        }} min={1} max={foundRow?.quantity ?? 0} defaultValue={1} onChange={(e) => {
-
-                                            const updatedPayload = saleItems?.map((currentItem) => {
-                                                if (currentItem.id === item.id) {
-                                                    return { ...currentItem, quantity: Number(e.target.value) };
-                                                }
-                                                return currentItem;
-                                            });
-
-                                            dispatch({
-                                                type: "OPEN_COMPLETING_SALE_MODAL",
-                                                payload: updatedPayload
-                                            });
+                                        }} min={0} max={foundRow?.quantity ?? 0} onChange={(e) => {
+                                            updateQuantity(item, e.target.value);
                                         }}
-                                        value={item?.quantity}
+                                        value={item.quantity}
                                         />
                                         <SquareButton size={30} style={{ fontSize: 20 }} onClick={(e) => {
                                             e.stopPropagation();

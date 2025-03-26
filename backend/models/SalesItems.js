@@ -37,7 +37,7 @@ const SalesItems = sequelize.define('SalesItems', {
     },
     barcode: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     createdAt: {
         type: DataTypes.DATE,
