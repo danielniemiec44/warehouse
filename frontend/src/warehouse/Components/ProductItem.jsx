@@ -15,7 +15,12 @@ const ProductItem = ({ changeQuantityByButton, item, updateQuantity }) => {
     const dispatch = useDispatch();
     const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, null);
     const { data: categories, status: categoriesStatus } = useCategories();
-    const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
+    const foundRow = warehouse?.warehouses?.find((row) => {
+        if(item?.productId) return row?.id === item?.productId;
+        else if(item?.id) return row?.id === item?.id;
+        else return false;
+
+    });
 
 
     return (
