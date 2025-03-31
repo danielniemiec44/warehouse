@@ -20,7 +20,7 @@ const FloatingSearchButton = ({ type = "tex", onChange, value }) => {
 
     return (
         <div>
-            <Button onClick={handleClick} sx={{color: value !== undefined && String(value) !== "" ? "green" : undefined}}>
+            <Button onClick={handleClick} sx={{color: value !== undefined && String(value) !== "" ? "yellow" : undefined}}>
                 <FilterAltIcon />
             </Button>
 
