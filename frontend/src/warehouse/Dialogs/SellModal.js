@@ -21,6 +21,7 @@ import {useMutation} from "react-query";
 import eventEmitter from "../Utils/eventEmitter";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import TextField from "@mui/material/TextField";
+import ProductItem from "../Components/ProductItem";
 import ProductList from "../Components/ProductList";
 
 function SellModal(){
@@ -123,19 +124,11 @@ function SellModal(){
             <DialogContent style={{ height: "calc(100vh - 200px)", boxSizing: "border-box" }}>
                 <Grid container spacing={2} style={{ height: "100%" }}>
                     <Grid item xs={12} md={6} style={{ height: "calc(100% - 40px)", overflowY: "auto", marginTop: 20, marginBottom: 20, boxSizing: "border-box" }}>
-            {saleItems?.map((item, index) => {
-                    const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
-
-                    return (
-                        <ProductList
-                            key={item.id}
-                            item={item}
-                            foundRow={foundRow}
-                            updateQuantity={(item, value) => updateQuantity(item, value)}
-                            changeQuantityByButton={(item, value) => changeQuantityByButton(item, value)}
-                        />
-                    )
-                })}
+            <ProductList
+                saleItems={saleItems}
+                updateQuantity={updateQuantity}
+                changeQuantityByButton={changeQuantityByButton}
+            />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <CustomersPage />

@@ -4,6 +4,8 @@ import Typography from "@mui/material/Typography";
 import {useTranslation} from "react-i18next";
 import {useQuery} from "react-query";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
+import ProductItem from "../Components/ProductItem";
+import ProductList from "../Components/ProductList";
 
 
 export const OrdersPage: React.FC = () => {
@@ -30,14 +32,16 @@ export const OrdersPage: React.FC = () => {
         <Box sx={{ m: 5, mb: 0 }}>
             <Typography variant={"h5"}>{t("pages.orders")}</Typography>
         <Box sx={{ m: 2, mb: 0, height: listHeight }} style={{ overflow: "auto", boxSizing: "border-box" }} ref={listRef}>
-            { data !== undefined && data.map((order: any) => {
+            { data !== undefined && data.map((order) => {
                 return (
                     <Accordion key={order.id}>
                         <AccordionSummary>
                             <Typography><b>{order.orderNumber}</b> - #{order.id}</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            
+                            <ProductList
+                                saleItems={order.saleItems}
+                            />
                         </AccordionDetails>
                     </Accordion>
                 )
