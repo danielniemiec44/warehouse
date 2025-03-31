@@ -1,5 +1,5 @@
 import React, {useLayoutEffect, useState} from "react";
-import {Accordion, AccordionSummary, Box} from "@mui/material";
+import {Accordion, AccordionDetails, AccordionSummary, Box} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import {useTranslation} from "react-i18next";
 import {useQuery} from "react-query";
@@ -7,7 +7,7 @@ import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 
 
 export const OrdersPage: React.FC = () => {
-    const [listHeight, setListHeight] = useState<number>(0);
+    const [listHeight, setListHeight] = useState(0);
     const listRef = React.useRef(null);
     const { t } = useTranslation();
     const { data, isLoading, isError } = useQuery("orders", CustomFetchForUseQuery("orders", "GET", null));
@@ -30,11 +30,19 @@ export const OrdersPage: React.FC = () => {
         <Box sx={{ m: 5, mb: 0 }}>
             <Typography variant={"h5"}>{t("pages.orders")}</Typography>
         <Box sx={{ m: 2, mb: 0, height: listHeight }} style={{ overflow: "auto", boxSizing: "border-box" }} ref={listRef}>
-            <Accordion>
-                <AccordionSummary>
-
-                </AccordionSummary>
-            </Accordion>
+            { data !== undefined && data.map((order: any) => {
+                return (
+                    <Accordion key={order.id}>
+                        <AccordionSummary>
+                            <Typography><b>{order.orderNumber}</b> - #{order.id}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            
+                        </AccordionDetails>
+                    </Accordion>
+                )
+            }
+            )}
         </Box>
         </Box>
     )
