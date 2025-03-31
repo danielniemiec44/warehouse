@@ -8,7 +8,7 @@ const ProductList = ({ saleItems, updateQuantity, changeQuantityByButton }) => {
         {saleItems?.map((item, index) => {
             return (
                 <ProductItem
-                    key={item.id}
+                    key={`product-item-index-${index}`}
                     item={item}
                     updateQuantity={updateQuantity && ((item, value) => updateQuantity(item, value))}
                     changeQuantityByButton={changeQuantityByButton && ((item, value) => changeQuantityByButton(item, value))}

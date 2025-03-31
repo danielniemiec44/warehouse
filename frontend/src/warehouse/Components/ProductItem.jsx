@@ -11,15 +11,15 @@ import {useWarehouse} from "../Pages/WarehouseIndex";
 import {useCategories} from "../Dialogs/CategoriesDialog";
 
 
-const ProductItem = ({ changeQuantityByButton, item, key, updateQuantity }) => {
+const ProductItem = ({ changeQuantityByButton, item, updateQuantity }) => {
     const dispatch = useDispatch();
-    const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, []);
+    const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, null);
+    const { data: categories, status: categoriesStatus } = useCategories();
     const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
 
-    const { data: categories, status: categoriesStatus } = useCategories();
 
     return (
-        <Accordion defaultExpanded key={key}>
+        <Accordion defaultExpanded>
             <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
                 aria-controls="panel1-content"
@@ -64,10 +64,10 @@ const ProductItem = ({ changeQuantityByButton, item, key, updateQuantity }) => {
                     </Stack>
             </AccordionSummary>
             <AccordionDetails>
-                {foundRow?.properties?.map((property) => {
+                {foundRow?.properties?.map((property, index) => {
 
                     return (
-                        <Box>
+                        <Box key={`property-index-${index}`}>
                             <Typography><b>{property?.customField?.name}:</b> {property?.PropertyValue}</Typography>
                         </Box>
                     )
