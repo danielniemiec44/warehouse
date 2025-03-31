@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import React from "react";
 import {useDispatch} from "react-redux";
 import {useWarehouse} from "../Pages/WarehouseIndex";
+import {useCategories} from "../Dialogs/CategoriesDialog";
 
 
 const ProductItem = ({ changeQuantityByButton, item, key, updateQuantity }) => {
@@ -15,6 +16,7 @@ const ProductItem = ({ changeQuantityByButton, item, key, updateQuantity }) => {
     const { data: warehouse, status } = useWarehouse(undefined, undefined, undefined, []);
     const foundRow = warehouse?.warehouses?.find((row) => row?.id === item?.id);
 
+    const { data: categories, status: categoriesStatus } = useCategories();
 
     return (
         <Accordion defaultExpanded key={key}>
@@ -53,8 +55,13 @@ const ProductItem = ({ changeQuantityByButton, item, key, updateQuantity }) => {
                     <Link component="button"
                           variant="body2"
                           onClick={(e) => { e.stopPropagation(); dispatch({ type: "SELECT_DISPLAY_CATEGORY_ROWS", payload: foundRow?.categoryId  }); dispatch({ type: "FILTER_ROWS", payload: {"name": foundRow?.name} }) }}>
-                        <Typography component="span">{foundRow?.name}  -  {foundRow?.barcode ?? "Nie przypisano kodu kreskowego"}</Typography></Link>
-                </Stack>
+                        <Stack>
+                            <Typography component="span">{foundRow?.name}  -  {foundRow?.barcode ?? "Nie przypisano kodu kreskowego"}</Typography>
+                            <Typography variant={"secondary"}>Kategoria: <b>{categories?.find((category) => category.id === foundRow?.categoryId)?.name ?? "Nie przypisano kategorii"}</b> - #{foundRow?.categoryId}</Typography>
+
+                        </Stack>
+                    </Link>
+                    </Stack>
             </AccordionSummary>
             <AccordionDetails>
                 {foundRow?.properties?.map((property) => {
