@@ -6,6 +6,7 @@ import {useQuery} from "react-query";
 import CustomFetchForUseQuery from "../Utils/CustomFetchForUseQuery";
 import ProductItem from "../Components/ProductItem";
 import ProductList from "../Components/ProductList";
+import Stack from "@mui/material/Stack";
 
 
 export const OrdersPage: React.FC = () => {
@@ -34,9 +35,12 @@ export const OrdersPage: React.FC = () => {
         <Box sx={{ m: 2, mb: 0, height: listHeight }} style={{ overflow: "auto", boxSizing: "border-box" }} ref={listRef}>
             { data !== undefined && data.map((order) => {
                 return (
-                    <Accordion key={order.id}>
+                    <Accordion key={`${order.id}`} defaultExpanded={false} sx={{ m: 2 }} elevation={4}>
                         <AccordionSummary>
-                            <Typography><b>{order.orderNumber}</b> - #{order.id}</Typography>
+                            <Stack>
+                                <Typography><b>{order.orderNumber}</b> - #{order.id}</Typography>
+                                <Typography>Klient o id: {order.buyerId}</Typography>
+                            </Stack>
                         </AccordionSummary>
                         <AccordionDetails>
                             <ProductList
