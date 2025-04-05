@@ -18,23 +18,27 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import PersonIcon from '@mui/icons-material/Person';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
+export const useCustomers = () => {
+    return useQuery("customers", CustomFetchForUseQuery("customers", "GET", null));
+};
+
+export const customerTypes = [
+    {
+        value: 'company',
+        label: 'Firma',
+        icon: <BusinessIcon />
+    },
+    {
+        value: 'individual',
+        label: 'Osoba prywatna',
+        icon: <PersonIcon />
+    }
+];
 
 const CustomersPage = () => {
     const dispatch = useDispatch();
     const showAddCustomerModal = useSelector((state) => state.modal.showAddCustomerModal);
-    const { data, isLoading, isError } = useQuery("customers", CustomFetchForUseQuery("customers", "GET", null)); // Use the returned function.
-    const customerTypes = [
-        {
-            value: 'company',
-            label: 'Firma',
-            icon: <BusinessIcon />
-        },
-        {
-            value: 'individual',
-            label: 'Osoba prywatna',
-            icon: <PersonIcon />
-        }
-    ];
+    const { data, isLoading, isError } = useCustomers();
     const selectedCustomer = useSelector((state) => state.warehouse.selectedCustomer);
     const mainView = React.useRef(null);
     const [listHeight, setListHeight] = React.useState(0)
