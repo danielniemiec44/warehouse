@@ -123,14 +123,14 @@ function SellModal(){
             </DialogTitle>
             <DialogContent style={{ height: "calc(100vh - 200px)", boxSizing: "border-box" }}>
                 <Grid container spacing={2} style={{ height: "100%" }}>
-                    <Grid item xs={12} md={6} style={{ height: "calc(100% - 40px)", overflowY: "auto", marginTop: 20, marginBottom: 20, boxSizing: "border-box" }}>
+                    <Grid size={{ xs: 12, md: 6}} style={{ height: "calc(100% - 40px)", overflowY: "auto", marginTop: 20, marginBottom: 20, boxSizing: "border-box" }}>
             <ProductList
                 saleItems={saleItems}
                 updateQuantity={updateQuantity}
                 changeQuantityByButton={changeQuantityByButton}
             />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6}} sx={{ border: '1px solid red' }}>
                         <CustomersPage />
                     </Grid>
                 </Grid>

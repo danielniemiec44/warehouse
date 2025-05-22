@@ -144,7 +144,7 @@ const CustomersPage = () => {
     };
 
     return (
-        <div ref={customerPageRef} style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
+        <div ref={customerPageRef} style={{ width: '100%', height: '100%' }}>
             <div style={{width: '100%', height: listHeight, padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
                 <div style={{
                     position: "absolute",
