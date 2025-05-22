@@ -65,9 +65,9 @@ const CategoriesDialog: React.FC = () => {
         <Dialog open={showCategoryList} onClose={close} fullWidth maxWidth="xs">
             <DialogTitle style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <span>{t('dialogTitles.categories')}</span>
-                <Tooltip title={t('dialogActions.add_category')}>
+                <Tooltip title={t('dialogActions.add_category')} children={
                     <SquareButton onClick={() => openCategoryEditor(5)} color="primary" size={"40px"} variant={"outlined"}>+</SquareButton>
-                </Tooltip>
+                } />
             </DialogTitle>
             <DialogContent>
                 {isLoading ? (

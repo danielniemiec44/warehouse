@@ -248,9 +248,9 @@ export default function WarehouseIndex() {
                             })
                         }
                     }]} />
-                    <Tooltip title={"Dodaj produkt"} arrow>
+                    <Tooltip title={"Dodaj produkt"} arrow children={
                         <Button onClick={() => { dispatch({ type: "OPEN_EDIT_ENTRY_MODAL", payload: 0 }) }} variant={"contained"} size={"small"}><AddBoxIcon />{t("actions.addProduct")}</Button>
-                    </Tooltip>
+                    } />
                     </Stack>
                 </Grid>
                 <Grid item lg={3} xs={12}>

@@ -1,12 +1,10 @@
 import * as React from 'react';
-import AppBar from "./AppBar";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid2";
+import Grid from "@mui/material/Grid";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import { deepPurple, lightGreen, pink, red } from "@mui/material/colors";
+import {lightGreen, pink, red } from "@mui/material/colors";
 import Button from "@mui/material/Button";
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import SummaryWarehouseStatus from "./SummaryWarehouseStatus";

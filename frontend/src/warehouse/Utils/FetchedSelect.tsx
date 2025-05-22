@@ -30,7 +30,9 @@ export default function FetchedSelect({ value, queryName, endpoint, method = "GE
 
     return (
         <FormControl variant="outlined" fullWidth>
-            <InputLabel id="product_type_label">{label}</InputLabel>
+            <InputLabel id="product_type_label" children={
+                label
+            } />
             <Select
                 labelId="product_type_label"
                 id="product_type_select"

@@ -241,9 +241,9 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
             <DialogContent>
                 {/*Main grid */}
                 <Container maxWidth="md" sx={{ mt: 2 }}>
-                    <Tooltip title={t("tooltips.categoryName")} arrow>
+                    <Tooltip title={t("tooltips.categoryName")} arrow children={
                         <TextField label={t("tooltips.categoryName")} fullWidth={true} value={newCategoryName} onChange={(e) => { handleCategoryNameChange(e) }}></TextField>
-                    </Tooltip>
+                    } />
                     <Grid container spacing={3} sx={{ p: 2 }}>
                         <Grid item sx={{ display: 'flex', justifyContent: { xs: "center", md: "left" }, alignItems: "center" }} xs={12} md={6}>
                             <List style={{ width: 'fit-content' }}>
@@ -251,17 +251,17 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
                                 {fields.map((field, index) => (
                                     <ListItem style={{ backgroundColor: fieldEditIndex === index ? green[200] : grey[200], marginBottom: '10px' }} key={field.name}>
                                         <Stack spacing={1} direction="row" sx={{ alignItems: 'center'}}>
-                                            <Tooltip title={t('fieldsActions.remove')} arrow>
+                                            <Tooltip title={t('fieldsActions.remove')} arrow children={
                                                 <IconButton size="small" color="error" aria-label="remove" onClick={() => { removeFieldIndex(index) }}>
                                                     <DeleteIcon />
                                                 </IconButton>
-                                            </Tooltip>
+                                            } />
                                             { fieldEditIndex !== index && (
-                                                <Tooltip title={t('fieldsActions.edit')} arrow>
+                                                <Tooltip title={t('fieldsActions.edit')} arrow children={
                                                     <IconButton color="primary" aria-label="edit" onClick={() => { setFieldEditIndex(index) }}>
                                                         <ModeIcon />
                                                     </IconButton>
-                                                </Tooltip>
+                                                } />
                                             ) }
 
                                             <Typography noWrap>{field.name}</Typography>
@@ -271,7 +271,7 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
                             </List>
                         </Grid>
                         <Grid item xs={12} md={6} sx={{ display: 'flex', alignItems: 'center', flexDirection: "column", justifyContent: "center" }}>
-                            <Tooltip title={t('tooltips.fieldName')} arrow>
+                            <Tooltip title={t('tooltips.fieldName')} arrow children={
                                 <TextField
                                     autoFocus
                                     margin="dense"
@@ -283,13 +283,11 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
                                     onChange={handleChange}
                                     name={"name"}
                                 />
-                            </Tooltip>
+                            } />
 
                             <FormControl fullWidth variant="outlined" margin="dense">
-                                <InputLabel id="category-type-label">
-                                    {t('tooltips.fieldType')}
-                                </InputLabel>
-                            <Tooltip title={t('tooltips.fieldType')} arrow>
+                                <InputLabel id="category-type-label" children={t('tooltips.fieldType')} />
+                            <Tooltip title={t('tooltips.fieldType')} arrow children={
                                 <Select
                                     autoFocus
                                     margin="dense"
@@ -305,11 +303,11 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
                                         <MenuItem key={fieldType.type} value={fieldType.type}>{fieldType.label}</MenuItem>
                                     ))}
                                 </Select>
-                            </Tooltip>
+                            } />
                             </FormControl>
 
                             {fields[fieldEditIndex].type === "text" && (
-                                <Tooltip title={t('tooltips.maxLen')} arrow>
+                                <Tooltip title={t('tooltips.maxLen')} arrow children={
                                     <TextField
                                         autoFocus
                                         margin="dense"
@@ -321,40 +319,40 @@ const CategoryEditor: React.FC<CategoryEditorProps> = () => {
                                         value={fields[fieldEditIndex].maxLen}
                                         name={"maxLen"}
                                     />
-                                </Tooltip>
+                                } />
                                 )}
 
-                            <Tooltip title={t('tooltips.defaultValue')} arrow>
-                                {fields[fieldEditIndex].type === 'checkbox' ? (
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox
-                                                checked={fields[fieldEditIndex].defaultValue === 'true'}
-                                                onChange={(e) => handleChange({
-                                                    target: {
-                                                        name: 'defaultValue',
-                                                        value: e.target.checked ? 'true' : 'false'
-                                                    }
-                                                } as React.ChangeEvent<HTMLInputElement>)}
-                                                name="defaultValue"
-                                            />
-                                        }
-                                        label={t('tooltips.defaultValue')}
-                                    />
-                                ) : (
-                                    <TextField
-                                        autoFocus
-                                        margin="dense"
-                                        label={t('tooltips.defaultValue')}
-                                        type={fields[fieldEditIndex].type as HTMLInputTypeAttribute}
-                                        fullWidth
-                                        variant="outlined"
-                                        onChange={handleChange}
-                                        value={fields[fieldEditIndex].defaultValue}
-                                        name="defaultValue"
-                                    />
-                                )}
-                            </Tooltip>
+                            <Tooltip title={t('tooltips.defaultValue')} arrow children={fields[fieldEditIndex].type === 'checkbox' ? (
+                                        <FormControlLabel
+                                            control={
+                                                <Checkbox
+                                                    checked={fields[fieldEditIndex].defaultValue === 'true'}
+                                                    onChange={(e) => handleChange({
+                                                        target: {
+                                                            name: 'defaultValue',
+                                                            value: e.target.checked ? 'true' : 'false'
+                                                        }
+                                                    } as React.ChangeEvent<HTMLInputElement>)}
+                                                    name="defaultValue"
+                                                />
+                                            }
+                                            label={t('tooltips.defaultValue')}
+                                        />
+                                    ) : (
+                                        <TextField
+                                            autoFocus
+                                            margin="dense"
+                                            label={t('tooltips.defaultValue')}
+                                            type={fields[fieldEditIndex].type as HTMLInputTypeAttribute}
+                                            fullWidth
+                                            variant="outlined"
+                                            onChange={handleChange}
+                                            value={fields[fieldEditIndex].defaultValue}
+                                            name="defaultValue"
+                                        />
+                                    )}
+                            />
+
                         </Grid>
                     </Grid>
                 </Container>

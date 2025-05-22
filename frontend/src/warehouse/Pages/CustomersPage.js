@@ -42,8 +42,10 @@ const CustomersPage = () => {
     const selectedCustomer = useSelector((state) => state.warehouse.selectedCustomer);
     const mainView = React.useRef(null);
     const [listHeight, setListHeight] = React.useState(0)
+    const [listWidth, setListWidth] = React.useState(10);
     const [search, setSearch] = React.useState("");
     const dataList = React.useRef(null);
+    const customerPageRef = React.useRef(null);
     // Add a new ref for the DOM element
     const listOuterRef = React.useRef(null);
 
@@ -55,6 +57,11 @@ const CustomersPage = () => {
             const absoluteTop = rect.top + window.scrollY;
 
             setListHeight(window.innerHeight - absoluteTop - 20);
+
+            const parent  = customerPageRef.current
+            console.log("Customers page parent:", parent);
+            setListWidth(parent.clientWidth - 40);
+            console.log("List height: ", window.innerHeight - absoluteTop - 20);
         };
 
         // Calculate height immediately
@@ -137,7 +144,7 @@ const CustomersPage = () => {
     };
 
     return (
-        <div>
+        <div ref={customerPageRef} style={{ width: '100%', height: '100vh', overflow: 'hidden', position: 'relative' }}>
             <div style={{width: '100%', height: listHeight, padding: 20, boxSizing: 'border-box', overflow: 'hidden', position: 'relative'}} ref={mainView}>
                 <div style={{
                     position: "absolute",
@@ -198,9 +205,10 @@ const CustomersPage = () => {
                     }}>+</SquareButton>
                 </Box>
                 <Box>
+
                         <FixedSizeList
                             height={listHeight - 80}
-                            width={"100%"}
+                            width={listWidth}
                             itemCount={searchData?.length || 0}
                             itemSize={100}
                             ref={dataList}
